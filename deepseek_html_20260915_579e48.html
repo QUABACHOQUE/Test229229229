@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FamilyHub — семейный CRM</title>
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --bg:#f2f4fa; --card:#fff; --text:#1e2330; --muted:#8b93a8;
+    --line:#e7eaf3; --accent:#6c5ce7; --accent-soft:#efecff;
+    --danger:#ff5c5c; --radius:16px; --shadow:0 2px 12px rgba(30,40,80,.06);
+  }
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ubuntu,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:940px;margin:0 auto;padding:0 16px 60px}
+
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 0 14px;gap:12px;flex-wrap:wrap;
+  }
+  .logo{font-size:20px;font-weight:800;letter-spacing:-.3px}
+  .logo span{color:var(--accent)}
+  .today{font-size:13px;color:var(--muted);font-weight:500}
+
+  .tabs{
+    display:flex;gap:6px;background:#fff;padding:6px;border-radius:14px;
+    box-shadow:var(--shadow);overflow-x:auto;margin-bottom:18px;
+  }
+  .tab{
+    flex:1;min-width:110px;border:0;background:transparent;padding:11px 12px;
+    border-radius:10px;font-size:14px;font-weight:600;color:var(--muted);
+    cursor:pointer;white-space:nowrap;transition:.15s;
+  }
+  .tab:hover{background:#f7f8fd;color:var(--text)}
+  .tab.active{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(108,92,231,.3)}
+
+  .panel{display:none;animation:fade .22s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .card{
+    background:var(--card);border-radius:var(--radius);padding:16px;
+    box-shadow:var(--shadow);margin-bottom:14px;
+  }
+
+  input[type=text],input[type=date],select{
+    font:inherit;color:var(--text);background:#f7f8fd;border:1px solid var(--line);
+    border-radius:10px;padding:10px 12px;outline:none;transition:.15s;width:100%;
+  }
+  input:focus,select:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+  input[type=color]{
+    width:42px;height:42px;padding:2px;border:1px solid var(--line);
+    border-radius:10px;background:#f7f8fd;cursor:pointer;flex:0 0 auto;
+  }
+  select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%238b93a8' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+
+  .btn{
+    font:inherit;font-weight:600;border:0;border-radius:10px;padding:10px 18px;
+    background:var(--accent);color:#fff;cursor:pointer;transition:.15s;white-space:nowrap;
+  }
+  .btn:hover{filter:brightness(1.08)}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:#f0f2f9;color:var(--muted)}
+  .btn.ghost:hover{background:#e6e9f4;color:var(--text)}
+  .btn.danger{background:#ffecec;color:var(--danger)}
+  .btn.danger:hover{background:#ffdede}
+
+  .add-form{display:flex;gap:8px;flex-wrap:wrap}
+  .add-form .grow{flex:1 1 200px;min-width:160px}
+  .add-form .sm{flex:0 1 150px}
+  .add-form .xs{flex:0 0 130px}
+
+  /* ---------- Блок времени "с — до" ---------- */
+  .time-range{
+    display:flex;align-items:center;gap:4px;
+    background:#f7f8fd;border:1px solid var(--line);border-radius:10px;
+    padding:2px 10px;transition:.15s;flex:0 1 240px;min-width:210px;
+  }
+  .time-range:focus-within{
+    border-color:var(--accent);background:#fff;
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .time-range .time-label{
+    font-size:11px;font-weight:700;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.4px;flex:0 0 auto;
+  }
+  .time-range .dash{color:#ccd2e4;font-weight:700;flex:0 0 auto;padding:0 2px}
+  .time-range .time-input{
+    border:0;background:transparent;padding:8px 2px;box-shadow:none!important;
+    width:auto;flex:1 1 60px;min-width:56px;font-weight:500;
+    font-variant-numeric:tabular-nums;text-align:center;
+  }
+  .time-range .time-input::placeholder{color:#c6ccdb;font-weight:400}
+
+  /* ---------- Переключатель "Вся семья" ---------- */
+  .toggle-family{
+    display:flex;align-items:center;gap:7px;padding:10px 14px;
+    border:1px solid var(--line);border-radius:10px;background:#f7f8fd;
+    cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);
+    transition:.15s;user-select:none;white-space:nowrap;
+  }
+  .toggle-family:hover{border-color:#cfd5e8;color:var(--text)}
+  .toggle-family input{display:none}
+  .toggle-family .toggle-box{
+    width:16px;height:16px;border-radius:5px;border:1.5px solid #ccd2e4;
+    background:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:11px;color:#fff;transition:.15s;flex:0 0 auto;
+  }
+  .toggle-family input:checked ~ .toggle-box{
+    background:var(--accent);border-color:var(--accent);
+  }
+  .toggle-family input:checked ~ .toggle-box::after{content:"✓"}
+  .toggle-family:has(input:checked){
+    background:var(--accent-soft);border-color:var(--accent);color:var(--accent);
+  }
+
+  .list{display:flex;flex-direction:column;gap:8px}
+  .item{
+    display:flex;align-items:flex-start;gap:12px;background:#fff;border-radius:14px;
+    padding:13px 14px;box-shadow:var(--shadow);transition:.15s;
+  }
+  .item:hover{box-shadow:0 4px 16px rgba(30,40,80,.09)}
+  .check{
+    flex:0 0 auto;width:22px;height:22px;margin-top:1px;border-radius:50%;
+    border:2px solid #ccd2e4;background:#fff;cursor:pointer;transition:.15s;
+    display:flex;align-items:center;justify-content:center;padding:0;
+    font-size:12px;color:#fff;
+  }
+  .check:hover{border-color:var(--accent)}
+  .item.done .check{background:var(--accent);border-color:var(--accent)}
+  .item.done .check::after{content:"✓"}
+  .item-body{flex:1;min-width:0}
+  .item-title{font-size:15px;font-weight:500;line-height:1.35;word-break:break-word}
+  .item.done .item-title{text-decoration:line-through;color:var(--muted)}
+  .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .chip{
+    font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:20px;
+    background:#f0f2f9;color:var(--muted);white-space:nowrap;
+  }
+  .chip.overdue{background:#ffecec;color:var(--danger)}
+  .chip.prio-high{background:#ffecec;color:#e5484d}
+  .chip.prio-normal{background:#eef4ff;color:#2f6fed}
+  .chip.prio-low{background:#eefaf3;color:#12a05c}
+  .chip.chip-family{
+    background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;
+  }
+  .chip.chip-duration{background:#fff4e6;color:#c47f17}
+  .del{
+    flex:0 0 auto;border:0;background:transparent;color:#c6ccdb;cursor:pointer;
+    font-size:16px;line-height:1;padding:4px 6px;border-radius:8px;transition:.15s;
+  }
+  .del:hover{background:#ffecec;color:var(--danger)}
+
+  .empty{text-align:center;padding:34px 16px;color:var(--muted);font-size:14px}
+  .empty .big{font-size:34px;display:block;margin-bottom:8px;opacity:.55}
+
+  .chips-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .chip-btn{
+    font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);
+    background:#fff;color:var(--muted);padding:7px 14px;border-radius:20px;
+    cursor:pointer;transition:.15s;
+  }
+  .chip-btn:hover{border-color:#cfd5e8}
+  .chip-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+  .cal-title{font-size:17px;font-weight:700;text-transform:capitalize}
+  .cal-nav{display:flex;gap:6px}
+  .icon-btn{
+    width:34px;height:34px;border-radius:10px;border:1px solid var(--line);
+    background:#fff;cursor:pointer;font-size:15px;color:var(--muted);
+    display:flex;align-items:center;justify-content:center;transition:.15s;
+  }
+  .icon-btn:hover{background:#f7f8fd;color:var(--text)}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .dow{text-align:center;font-size:11px;font-weight:700;color:var(--muted);
+       padding:4px 0;text-transform:uppercase;letter-spacing:.5px}
+  .day{
+    min-height:68px;border-radius:11px;background:#f8f9fd;border:1px solid transparent;
+    padding:5px 6px;cursor:pointer;display:flex;flex-direction:column;gap:3px;
+    transition:.13s;overflow:hidden;
+  }
+  .day:hover{background:#f1f3fb}
+  .day.blank{background:transparent;cursor:default;border:0}
+  .day.today{border-color:var(--accent);background:var(--accent-soft)}
+  .day.selected{box-shadow:0 0 0 2px var(--accent);background:#fff}
+  .day .num{font-size:12px;font-weight:700;color:#525a70}
+  .day.today .num{color:var(--accent)}
+  .ev{
+    font-size:10px;font-weight:600;color:#fff;border-radius:5px;
+    padding:2px 5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .ev-more{font-size:10px;color:var(--muted);font-weight:600;padding-left:2px}
+  @media(max-width:560px){
+    .day{min-height:52px;padding:4px}
+    .ev{display:none}
+    .day .num{font-size:13px}
+  }
+
+  .progress-wrap{margin-bottom:14px}
+  .progress-top{display:flex;justify-content:space-between;font-size:13px;
+    font-weight:600;color:var(--muted);margin-bottom:7px}
+  .progress-bar{height:8px;border-radius:20px;background:#e8ebf5;overflow:hidden}
+  .progress-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#6c5ce7,#a29bfe);transition:width .3s}
+
+  .member{
+    display:flex;align-items:center;gap:14px;background:#fff;border-radius:14px;
+    padding:13px 15px;box-shadow:var(--shadow);
+  }
+  .avatar{
+    width:44px;height:44px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;font-size:21px;flex:0 0 auto;
+  }
+  .member-name{font-weight:600;font-size:15px}
+  .member-sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+
+  .section-title{font-size:15px;font-weight:700;margin:0 0 12px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="logo">🏡 Family<span>Hub</span></div>
+    <div class="today" id="todayLabel"></div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="tasks">✅ Задачи</button>
+    <button class="tab" data-tab="calendar">📅 Календарь</button>
+    <button class="tab" data-tab="shopping">🛒 Покупки</button>
+    <button class="tab" data-tab="family">👨‍👩‍👧 Семья</button>
+  </nav>
+
+  <!-- ================= ЗАДАЧИ ================= -->
+  <section class="panel active" id="panel-tasks">
+    <div class="card">
+      <div class="add-form">
+        <input type="text" id="taskTitle" class="grow" placeholder="Что нужно сделать?">
+        <select id="taskAssignee" class="sm"></select>
+        <input type="date" id="taskDue" class="xs">
+        <select id="taskPriority" class="xs">
+          <option value="normal">Обычное</option>
+          <option value="high">Срочно</option>
+          <option value="low">Не срочно</option>
+        </select>
+        <button class="btn" id="addTaskBtn">Добавить</button>
+      </div>
+    </div>
+
+    <div class="progress-wrap" id="taskProgress"></div>
+    <div class="chips-row" id="taskFilters"></div>
+    <div class="list" id="taskList"></div>
+  </section>
+
+  <!-- ================= КАЛЕНДАРЬ ================= -->
+  <section class="panel" id="panel-calendar">
+    <div class="card">
+      <div class="cal-head">
+        <div class="cal-title" id="calTitle"></div>
+        <div class="cal-nav">
+          <button class="icon-btn" id="prevMonth">‹</button>
+          <button class="icon-btn" id="todayBtn">•</button>
+          <button class="icon-btn" id="nextMonth">›</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+
+    <div class="card">
+      <p class="section-title" id="dayTitle"></p>
+      <div class="list" id="eventList" style="margin-bottom:14px"></div>
+      <div class="add-form">
+        <input type="text" id="eventTitle" class="grow" placeholder="Новое событие…">
+
+        <div class="time-range" title="Время начала и окончания — можно ввести только час, минуты подставятся">
+          <span class="time-label">с</span>
+          <input type="text" id="eventTime" class="time-input"
+                 inputmode="numeric" placeholder="13:00" aria-label="Время начала" maxlength="5">
+          <span class="dash">—</span>
+          <span class="time-label">до</span>
+          <input type="text" id="eventTimeEnd" class="time-input"
+                 inputmode="numeric" placeholder="14:00" aria-label="Время окончания" maxlength="5">
+        </div>
+
+        <select id="eventMember" class="sm"></select>
+        <label class="toggle-family" title="Событие для всей семьи">
+          <input type="checkbox" id="eventWholeFamily">
+          <span class="toggle-box"></span>
+          <span>👨‍👩‍👧 Вся семья</span>
+        </label>
+        <button class="btn" id="addEventBtn">Добавить</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ПОКУПКИ ================= -->
+  <section class="panel" id="panel-shopping">
+    <div class="card">
+      <div class="add-form">
+        <input type="text" id="shopInput" class="grow" placeholder="Что купить? (например, молоко)">
+        <button class="btn" id="addShopBtn">Добавить</button>
+      </div>
+    </div>
+
+    <div class="progress-wrap" id="shopProgress"></div>
+    <div class="list" id="shopList"></div>
+
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost" id="clearBoughtBtn">Убрать купленное</button>
+      <button class="btn danger" id="clearAllShopBtn">Очистить список</button>
+    </div>
+  </section>
+
+  <!-- ================= СЕМЬЯ ================= -->
+  <section class="panel" id="panel-family">
+    <div class="card">
+      <p class="section-title">Добавить члена семьи</p>
+      <div class="add-form">
+        <input type="text" id="memberName" class="grow" placeholder="Имя" maxlength="20">
+        <input type="text" id="memberEmoji" class="xs" placeholder="🙂" maxlength="2" style="text-align:center;font-size:18px">
+        <input type="color" id="memberColor" value="#6c5ce7">
+        <button class="btn" id="addMemberBtn">Добавить</button>
+      </div>
+    </div>
+
+    <div class="list" id="memberList"></div>
+
+    <div style="margin-top:20px">
+      <button class="btn ghost" id="resetBtn">Сбросить все данные</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   СОСТОЯНИЕ
+   ============================================================ */
+const LS_KEY = 'familyhub.v1';
+const uid = () => Math.random().toString(36).slice(2, 10);
+const $ = id => document.getElementById(id);
+const FAMILY = 'all';
+
+function iso(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+const TODAY = iso(new Date());
+
+function defaultState() {
+  return {
+    members: [
+      { id: uid(), name: 'Мама',  emoji: '👩', color: '#e84393' },
+      { id: uid(), name: 'Папа',  emoji: '👨', color: '#0984e3' },
+      { id: uid(), name: 'Ребёнок', emoji: '🧒', color: '#00b894' }
+    ],
+    tasks: [],
+    events: [],
+    shopping: []
+  };
+}
+
+let state;
+try {
+  state = JSON.parse(localStorage.getItem(LS_KEY)) || defaultState();
+} catch (e) { state = defaultState(); }
+
+function save() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function memberById(id) { return state.members.find(m => m.id === id); }
+function isFamily(id) { return id === FAMILY; }
+
+function fmtDate(isoStr) {
+  const d = new Date(isoStr + 'T00:00:00');
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+}
+
+/* ============================================================
+   УМНОЕ ПОЛЕ ВРЕМЕНИ
+   Пользователь может ввести "13" → получит "13:00"
+   "9" → "09:00", "1300" → "13:00", "13.5" → "13:05", "13:30" → "13:30"
+   ============================================================ */
+function formatTimeInput(raw) {
+  const s = String(raw || '').trim();
+  if (!s) return '';
+
+  // Приводим разделители к ':'
+  let cleaned = s.replace(/[.\-–—]/g, ':');
+
+  let h, m;
+  if (cleaned.indexOf(':') === -1) {
+    // Только цифры
+    const digits = cleaned.replace(/\D/g, '');
+    if (!digits) return '';
+    if (digits.length <= 2) {
+      h = parseInt(digits, 10);
+      m = 0;
+    } else if (digits.length === 3) {
+      // "930" → 9:30
+      h = parseInt(digits.slice(0, 1), 10);
+      m = parseInt(digits.slice(1), 10);
+    } else {
+      // "1330" → 13:30
+      h = parseInt(digits.slice(0, 2), 10);
+      m = parseInt(digits.slice(2, 4) || '0', 10);
+    }
+  } else {
+    const parts = cleaned.split(':');
+    h = parseInt((parts[0] || '').replace(/\D/g, '') || '0', 10);
+    m = parseInt((parts[1] || '').replace(/\D/g, '') || '0', 10);
+  }
+
+  if (!isFinite(h) || isNaN(h)) h = 0;
+  if (!isFinite(m) || isNaN(m)) m = 0;
+  if (h < 0) h = 0; if (h > 23) h = 23;
+  if (m < 0) m = 0; if (m > 59) m = 59;
+
+  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+}
+
+/* Прикрепляет "умное" поведение к текстовому полю */
+function attachSmartTime(el) {
+  // Пока печатает — пропускаем только цифры и разделители
+  el.addEventListener('input', () => {
+    const v = el.value.replace(/[^\d:.\-–—]/g, '');
+    if (v !== el.value) el.value = v;
+  });
+
+  const commit = () => {
+    const formatted = formatTimeInput(el.value);
+    el.value = formatted;
+    // После нормализации может измениться порядок — проверим
+    if (el === $('eventTime') || el === $('eventTimeEnd')) normalizeTimeRange();
+  };
+
+  el.addEventListener('blur', commit);
+  el.addEventListener('change', commit);
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+  });
+}
+
+/* Если пользователь ввёл конец меньше начала — меняем местами */
+function normalizeTimeRange() {
+  const s = $('eventTime').value;
+  const e = $('eventTimeEnd').value;
+  if (s && e && e < s) {
+    $('eventTime').value = e;
+    $('eventTimeEnd').value = s;
+  }
+}
+
+/* Длительность в минутах */
+function durationMin(start, end) {
+  if (!start || !end) return 0;
+  const [sh, sm] = start.split(':').map(Number);
+  const [eh, em] = end.split(':').map(Number);
+  return (eh * 60 + em) - (sh * 60 + sm);
+}
+
+function fmtDuration(start, end) {
+  const mins = durationMin(start, end);
+  if (mins <= 0) return '';
+  const h = Math.floor(mins / 60), m = mins % 60;
+  if (h && m) return `${h}ч ${m}м`;
+  if (h)      return `${h}ч`;
+  return `${m}м`;
+}
+
+function eventSortKey(e) { return e.time || '99:99'; }
+
+const PRIO_LABEL = { high: 'Срочно', normal: 'Обычное', low: 'Не срочно' };
+const FAMILY_GRAD = 'linear-gradient(135deg,#6c5ce7,#a29bfe)';
+
+/* ============================================================
+   ШАПКА / ТАБЫ
+   ============================================================ */
+$('todayLabel').textContent = new Date().toLocaleDateString('ru-RU', {
+  weekday: 'long', day: 'numeric', month: 'long'
+});
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    $('panel-' + t.dataset.tab).classList.add('active');
+  });
+});
+
+/* ============================================================
+   ЗАДАЧИ
+   ============================================================ */
+let taskFilter = 'all';
+
+function renderMemberSelects() {
+  const opts = state.members
+    .map(m => `<option value="${m.id}">${esc(m.emoji)} ${esc(m.name)}</option>`)
+    .join('');
+  $('taskAssignee').innerHTML = opts;
+  $('eventMember').innerHTML = opts;
+}
+
+function renderTaskFilters() {
+  const wrap = $('taskFilters');
+  let html = `<button class="chip-btn ${taskFilter === 'all' ? 'active' : ''}" data-f="all">Все</button>`;
+  state.members.forEach(m => {
+    html += `<button class="chip-btn ${taskFilter === m.id ? 'active' : ''}" data-f="${m.id}">
+      ${esc(m.emoji)} ${esc(m.name)}</button>`;
+  });
+  wrap.innerHTML = html;
+}
+
+$('taskFilters').addEventListener('click', e => {
+  const b = e.target.closest('.chip-btn');
+  if (!b) return;
+  taskFilter = b.dataset.f;
+  renderTasks();
+});
+
+function renderTasks() {
+  renderTaskFilters();
+
+  let items = state.tasks.slice();
+  if (taskFilter !== 'all') items = items.filter(t => t.assigneeId === taskFilter);
+
+  items.sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    if (a.due && b.due) return a.due.localeCompare(b.due);
+    if (a.due) return -1;
+    if (b.due) return 1;
+    return 0;
+  });
+
+  const total = state.tasks.length;
+  const done = state.tasks.filter(t => t.done).length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  $('taskProgress').innerHTML = total ? `
+    <div class="progress-top"><span>Выполнено ${done} из ${total}</span><span>${pct}%</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>` : '';
+
+  const list = $('taskList');
+  if (!items.length) {
+    list.innerHTML = `<div class="empty"><span class="big">📝</span>Пока нет задач. Добавьте первую!</div>`;
+    return;
+  }
+
+  list.innerHTML = items.map(t => {
+    const m = memberById(t.assigneeId);
+    const overdue = t.due && !t.done && t.due < TODAY;
+    const chips = [];
+    if (m) chips.push(`<span class="chip" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji)} ${esc(m.name)}</span>`);
+    if (t.due) chips.push(`<span class="chip ${overdue ? 'overdue' : ''}">📅 ${fmtDate(t.due)}${overdue ? ' · просрочено' : ''}</span>`);
+    if (t.priority && t.priority !== 'normal') chips.push(`<span class="chip prio-${t.priority}">${PRIO_LABEL[t.priority]}</span>`);
+
+    return `<div class="item ${t.done ? 'done' : ''}" data-id="${t.id}">
+      <button class="check" title="Отметить"></button>
+      <div class="item-body">
+        <div class="item-title">${esc(t.title)}</div>
+        <div class="meta">${chips.join('')}</div>
+      </div>
+      <button class="del" title="Удалить">✕</button>
+    </div>`;
+  }).join('');
+}
+
+$('addTaskBtn').addEventListener('click', addTask);
+$('taskTitle').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+
+function addTask() {
+  const title = $('taskTitle').value.trim();
+  if (!title) { $('taskTitle').focus(); return; }
+  state.tasks.push({
+    id: uid(),
+    title,
+    assigneeId: $('taskAssignee').value || null,
+    due: $('taskDue').value || null,
+    priority: $('taskPriority').value,
+    done: false,
+    createdAt: Date.now()
+  });
+  $('taskTitle').value = '';
+  $('taskDue').value = '';
+  $('taskPriority').value = 'normal';
+  save();
+  renderTasks();
+  $('taskTitle').focus();
+}
+
+$('taskList').addEventListener('click', e => {
+  const row = e.target.closest('.item');
+  if (!row) return;
+  const t = state.tasks.find(x => x.id === row.dataset.id);
+  if (!t) return;
+  if (e.target.closest('.check')) { t.done = !t.done; save(); renderTasks(); }
+  if (e.target.closest('.del')) {
+    state.tasks = state.tasks.filter(x => x.id !== t.id);
+    save(); renderTasks();
+  }
+});
+
+/* ============================================================
+   КАЛЕНДАРЬ
+   ============================================================ */
+const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь',
+                'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const DOW = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+
+let calYear, calMonth, selectedDate;
+
+(function initCal() {
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  selectedDate = TODAY;
+})();
+
+$('prevMonth').addEventListener('click', () => {
+  calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+});
+$('nextMonth').addEventListener('click', () => {
+  calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+});
+$('todayBtn').addEventListener('click', () => {
+  const n = new Date();
+  calYear = n.getFullYear(); calMonth = n.getMonth();
+  selectedDate = TODAY;
+  renderCalendar();
+});
+
+/* Прикрепляем "умное" поведение к обоим полям времени */
+attachSmartTime($('eventTime'));
+attachSmartTime($('eventTimeEnd'));
+
+/* Переключатель "Вся семья": прячет селект участника */
+$('eventWholeFamily').addEventListener('change', e => {
+  $('eventMember').style.display = e.target.checked ? 'none' : '';
+});
+
+function renderCalendar() {
+  $('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
+
+  const first = new Date(calYear, calMonth, 1);
+  const startOffset = (first.getDay() + 6) % 7;
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+  let html = DOW.map(d => `<div class="dow">${d}</div>`).join('');
+  for (let i = 0; i < startOffset; i++) html += `<div class="day blank"></div>`;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const evs = state.events
+      .filter(e => e.date === dateStr)
+      .sort((a, b) => eventSortKey(a).localeCompare(eventSortKey(b)));
+
+    const cls = ['day'];
+    if (dateStr === TODAY) cls.push('today');
+    if (dateStr === selectedDate) cls.push('selected');
+
+    const shown = evs.slice(0, 2).map(e => {
+      const family = isFamily(e.memberId);
+      const m = family ? null : memberById(e.memberId);
+      const bg = family ? FAMILY_GRAD : (m ? m.color : '#6c5ce7');
+      const timePart = e.time ? `${e.time} ` : '';
+      const label = family ? `👨‍👩‍👧 ${timePart}${e.title}` : `${timePart}${e.title}`;
+      return `<div class="ev" style="background:${bg}" title="${esc(e.title)}">${esc(label)}</div>`;
+    }).join('');
+    const more = evs.length > 2 ? `<div class="ev-more">+${evs.length - 2}</div>` : '';
+
+    html += `<div class="${cls.join(' ')}" data-date="${dateStr}">
+      <div class="num">${d}</div>${shown}${more}
+    </div>`;
+  }
+
+  $('calGrid').innerHTML = html;
+  renderDayEvents();
+}
+
+$('calGrid').addEventListener('click', e => {
+  const cell = e.target.closest('.day');
+  if (!cell || cell.classList.contains('blank')) return;
+  selectedDate = cell.dataset.date;
+  renderCalendar();
+});
+
+function renderDayEvents() {
+  const d = new Date(selectedDate + 'T00:00:00');
+  $('dayTitle').textContent = d.toLocaleDateString('ru-RU', {
+    day: 'numeric', month: 'long', weekday: 'long'
+  });
+
+  const evs = state.events
+    .filter(e => e.date === selectedDate)
+    .sort((a, b) => eventSortKey(a).localeCompare(eventSortKey(b)));
+
+  const list = $('eventList');
+  if (!evs.length) {
+    list.innerHTML = `<div class="empty" style="padding:18px"><span class="big">🗓️</span>На этот день ничего не запланировано</div>`;
+    return;
+  }
+
+  list.innerHTML = evs.map(e => {
+    const family = isFamily(e.memberId);
+    const m = family ? null : memberById(e.memberId);
+    const bg = family ? FAMILY_GRAD : (m ? m.color : '#6c5ce7');
+
+    const chips = [];
+    if (e.time && e.endTime) {
+      chips.push(`<span class="chip">🕐 ${esc(e.time)} – ${esc(e.endTime)}</span>`);
+    } else if (e.time) {
+      chips.push(`<span class="chip">🕐 с ${esc(e.time)}</span>`);
+    } else if (e.endTime) {
+      chips.push(`<span class="chip">🕐 до ${esc(e.endTime)}</span>`);
+    }
+    const dur = fmtDuration(e.time, e.endTime);
+    if (dur) chips.push(`<span class="chip chip-duration">⏱ ${dur}</span>`);
+
+    if (family) chips.push(`<span class="chip chip-family">👨‍👩‍👧 Вся семья</span>`);
+    else if (m) chips.push(`<span class="chip" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji)} ${esc(m.name)}</span>`);
+
+    return `<div class="item" data-id="${e.id}">
+      <div style="width:6px;align-self:stretch;border-radius:6px;background:${bg};flex:0 0 auto"></div>
+      <div class="item-body">
+        <div class="item-title">${esc(e.title)}</div>
+        <div class="meta">${chips.join('')}</div>
+      </div>
+      <button class="del" title="Удалить">✕</button>
+    </div>`;
+  }).join('');
+}
+
+$('addEventBtn').addEventListener('click', addEvent);
+$('eventTitle').addEventListener('keydown', e => { if (e.key === 'Enter') addEvent(); });
+
+function addEvent() {
+  const title = $('eventTitle').value.trim();
+  if (!title) { $('eventTitle').focus(); return; }
+
+  // Принудительно нормализуем поля времени перед сохранением
+  // (на случай, если пользователь не ушёл с поля, а сразу нажал "Добавить")
+  $('eventTime').value    = formatTimeInput($('eventTime').value);
+  $('eventTimeEnd').value = formatTimeInput($('eventTimeEnd').value);
+  normalizeTimeRange();
+
+  const start = $('eventTime').value || '';
+  const end   = $('eventTimeEnd').value || '';
+  const family = $('eventWholeFamily').checked;
+
+  state.events.push({
+    id: uid(),
+    title,
+    date: selectedDate,
+    time: start,
+    endTime: end,
+    memberId: family ? FAMILY : ($('eventMember').value || null)
+  });
+
+  $('eventTitle').value = '';
+  $('eventTime').value = '';
+  $('eventTimeEnd').value = '';
+  $('eventWholeFamily').checked = false;
+  $('eventMember').style.display = '';
+
+  save();
+  renderCalendar();
+  $('eventTitle').focus();
+}
+
+$('eventList').addEventListener('click', e => {
+  const row = e.target.closest('.item');
+  if (!row || !e.target.closest('.del')) return;
+  state.events = state.events.filter(x => x.id !== row.dataset.id);
+  save();
+  renderCalendar();
+});
+
+/* ============================================================
+   ПОКУПКИ
+   ============================================================ */
+function renderShopping() {
+  const total = state.shopping.length;
+  const bought = state.shopping.filter(i => i.done).length;
+  const pct = total ? Math.round(bought / total * 100) : 0;
+
+  $('shopProgress').innerHTML = total ? `
+    <div class="progress-top"><span>Куплено ${bought} из ${total}</span><span>${pct}%</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>` : '';
+
+  const list = $('shopList');
+  if (!total) {
+    list.innerHTML = `<div class="empty"><span class="big">🛒</span>Список покупок пуст</div>`;
+    return;
+  }
+
+  list.innerHTML = state.shopping.map(i => `
+    <div class="item ${i.done ? 'done' : ''}" data-id="${i.id}">
+      <button class="check"></button>
+      <div class="item-body"><div class="item-title">${esc(i.text)}</div></div>
+      <button class="del">✕</button>
+    </div>`).join('');
+}
+
+$('addShopBtn').addEventListener('click', addShopItem);
+$('shopInput').addEventListener('keydown', e => { if (e.key === 'Enter') addShopItem(); });
+
+function addShopItem() {
+  const text = $('shopInput').value.trim();
+  if (!text) { $('shopInput').focus(); return; }
+  const existing = state.shopping.find(i => i.text.toLowerCase() === text.toLowerCase());
+  if (existing) { existing.done = false; }
+  else state.shopping.push({ id: uid(), text, done: false });
+  $('shopInput').value = '';
+  save();
+  renderShopping();
+  $('shopInput').focus();
+}
+
+$('shopList').addEventListener('click', e => {
+  const row = e.target.closest('.item');
+  if (!row) return;
+  const item = state.shopping.find(x => x.id === row.dataset.id);
+  if (!item) return;
+  if (e.target.closest('.check')) { item.done = !item.done; save(); renderShopping(); }
+  if (e.target.closest('.del')) {
+    state.shopping = state.shopping.filter(x => x.id !== item.id);
+    save(); renderShopping();
+  }
+});
+
+$('clearBoughtBtn').addEventListener('click', () => {
+  state.shopping = state.shopping.filter(i => !i.done);
+  save(); renderShopping();
+});
+
+$('clearAllShopBtn').addEventListener('click', () => {
+  if (!state.shopping.length) return;
+  if (confirm('Очистить весь список покупок?')) {
+    state.shopping = [];
+    save(); renderShopping();
+  }
+});
+
+/* ============================================================
+   СЕМЬЯ
+   ============================================================ */
+function renderMembers() {
+  const list = $('memberList');
+  if (!state.members.length) {
+    list.innerHTML = `<div class="empty"><span class="big">👪</span>Добавьте членов семьи</div>`;
+    return;
+  }
+
+  list.innerHTML = state.members.map(m => {
+    const open = state.tasks.filter(t => t.assigneeId === m.id && !t.done).length;
+    const done = state.tasks.filter(t => t.assigneeId === m.id && t.done).length;
+    return `<div class="member" data-id="${m.id}">
+      <div class="avatar" style="background:${m.color}22">${esc(m.emoji)}</div>
+      <div style="flex:1;min-width:0">
+        <div class="member-name">${esc(m.name)}</div>
+        <div class="member-sub">${open} активных · ${done} выполнено</div>
+      </div>
+      <button class="del" title="Удалить">✕</button>
+    </div>`;
+  }).join('');
+}
+
+$('addMemberBtn').addEventListener('click', addMember);
+$('memberName').addEventListener('keydown', e => { if (e.key === 'Enter') addMember(); });
+
+function addMember() {
+  const name = $('memberName').value.trim();
+  if (!name) { $('memberName').focus(); return; }
+  state.members.push({
+    id: uid(),
+    name,
+    emoji: $('memberEmoji').value.trim() || '🙂',
+    color: $('memberColor').value
+  });
+  $('memberName').value = '';
+  $('memberEmoji').value = '';
+  save();
+  renderAll();
+}
+
+$('memberList').addEventListener('click', e => {
+  const row = e.target.closest('.member');
+  if (!row || !e.target.closest('.del')) return;
+  const id = row.dataset.id;
+  const m = memberById(id);
+  if (!confirm(`Удалить «${m.name}»? Их задачи и события останутся, но без исполнителя.`)) return;
+  state.members = state.members.filter(x => x.id !== id);
+  state.tasks.forEach(t => { if (t.assigneeId === id) t.assigneeId = null; });
+  state.events.forEach(ev => { if (ev.memberId === id) ev.memberId = null; });
+  if (taskFilter === id) taskFilter = 'all';
+  save();
+  renderAll();
+});
+
+$('resetBtn').addEventListener('click', () => {
+  if (!confirm('Удалить ВСЕ данные и вернуть демо-состояние?')) return;
+  state = defaultState();
+  taskFilter = 'all';
+  selectedDate = TODAY;
+  const n = new Date(); calYear = n.getFullYear(); calMonth = n.getMonth();
+  save();
+  renderAll();
+});
+
+/* ============================================================
+   ОБЩИЙ РЕНДЕР
+   ============================================================ */
+function renderAll() {
+  renderMemberSelects();
+  renderTasks();
+  renderCalendar();
+  renderShopping();
+  renderMembers();
+}
+
+renderAll();
+</script>
+</body>
+</html>
