@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="familyhub-version" content="2.1">
 <title>FamilyHub</title>
 <style>
   *{box-sizing:border-box}
@@ -69,15 +68,6 @@
     padding:10px 14px;border-radius:10px;margin-top:14px;display:none;
   }
   .onb-error.show{display:block}
-  .onb-reset{
-    text-align:center;margin-top:24px;font-size:12px;color:var(--muted);
-    line-height:1.6;
-  }
-  .onb-reset a{
-    color:var(--accent);font-weight:600;text-decoration:none;cursor:pointer;
-    border-bottom:1px dashed var(--accent);
-  }
-  .onb-reset a:hover{color:#4b3fc4;border-bottom-style:solid}
 
   .code-display{
     background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;
@@ -91,27 +81,7 @@
   }
   .code-hint{font-size:13px;color:var(--muted);line-height:1.5;margin-top:8px}
 
-  .family-screen{
-    position:fixed;inset:0;background:var(--bg);z-index:90;
-    overflow-y:auto;
-    animation:fadeScreen .22s ease;
-  }
-  @keyframes fadeScreen{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-  .family-screen-inner{
-    max-width:940px;margin:0 auto;padding:20px 16px 60px;
-  }
-  .family-screen-topbar{
-    display:flex;align-items:center;gap:12px;margin-bottom:16px;
-  }
-  .family-back-btn{
-    display:inline-flex;align-items:center;gap:8px;
-    border:0;background:#fff;color:var(--text);cursor:pointer;
-    padding:10px 16px;border-radius:12px;font:inherit;font-weight:700;
-    font-size:14px;box-shadow:var(--shadow);transition:.15s;
-  }
-  .family-back-btn:hover{background:#f7f8fd;transform:translateX(-2px)}
-  .family-back-btn .arrow{color:var(--accent);font-size:16px}
-
+  /* ---------- Emoji picker ---------- */
   .emoji-picker{
     display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
     margin:0 auto;
@@ -141,16 +111,11 @@
   .logo span{color:var(--accent)}
   .family-chip{
     display:inline-flex;align-items:center;gap:8px;background:#fff;
-    padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;
+    padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700;
     box-shadow:var(--shadow);color:var(--text);
-    border:0;cursor:pointer;font-family:inherit;
-    transition:.15s;
   }
-  .family-chip:hover{box-shadow:0 4px 14px rgba(30,40,80,.12);transform:translateY(-1px)}
-  .family-chip:active{transform:translateY(0)}
-  .family-chip .dot{width:8px;height:8px;border-radius:50%;background:#12a05c;flex:0 0 auto}
+  .family-chip .dot{width:8px;height:8px;border-radius:50%;background:#12a05c}
   .family-chip.offline .dot{background:#c6ccdb}
-  .family-chip .chev{color:#c6ccdb;font-size:13px;line-height:1;margin-left:2px}
   .today{font-size:13px;color:var(--muted);font-weight:500}
 
   .tabs{
@@ -281,6 +246,7 @@
   }
   .del:hover{background:#ffecec;color:var(--danger)}
 
+  /* ---------- Редактирование профиля ---------- */
   .edit-name-btn{
     flex:0 0 auto;border:0;background:transparent;color:#c6ccdb;cursor:pointer;
     font-size:15px;line-height:1;padding:6px 8px;border-radius:8px;transition:.15s;
@@ -382,17 +348,6 @@
     font-size:22px;font-weight:800;letter-spacing:6px;
     font-variant-numeric:tabular-nums;color:var(--accent);
   }
-
-  /* Опасная зона — выход из семьи */
-  .danger-zone{
-    margin-top:24px;padding:16px;border-radius:14px;
-    background:#fff5f5;border:1px solid #ffdddd;
-  }
-  .danger-zone .section-title{color:var(--danger);margin-bottom:8px}
-  .danger-zone .hint{
-    font-size:12.5px;color:#a06060;line-height:1.5;margin-bottom:12px;
-  }
-
   .toast{
     position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
     background:#1e2330;color:#fff;padding:12px 20px;border-radius:12px;
@@ -400,28 +355,6 @@
     opacity:0;transition:.3s;z-index:200;pointer-events:none;
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-  /* Ошибка на весь экран — если что-то пошло совсем не так */
-  .fatal-error{
-    position:fixed;inset:0;background:rgba(30,35,48,.95);color:#fff;z-index:10000;
-    display:flex;align-items:center;justify-content:center;padding:24px;
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  }
-  .fatal-error-inner{
-    max-width:480px;background:#2a3042;border-radius:20px;padding:28px;
-    text-align:center;
-  }
-  .fatal-error h2{margin:0 0 12px;font-size:20px}
-  .fatal-error p{margin:0 0 20px;font-size:14px;opacity:.85;line-height:1.5}
-  .fatal-error code{
-    display:block;background:#1a1e2c;padding:12px;border-radius:8px;
-    font-size:12px;text-align:left;margin-bottom:20px;word-break:break-all;
-    max-height:150px;overflow-y:auto;font-family:ui-monospace,monospace;
-  }
-  .fatal-error button{
-    background:var(--accent);color:#fff;border:0;padding:12px 24px;
-    border-radius:10px;font:inherit;font-weight:700;cursor:pointer;
-  }
 </style>
 </head>
 <body>
@@ -434,11 +367,6 @@
     <div class="onb-sub">Семейный органайзер: задачи, календарь, покупки.<br>Все данные общие для членов семьи.</div>
     <button class="onb-btn primary" id="goCreate">Создать новую семью</button>
     <button class="onb-btn secondary" id="goJoin">Присоединиться по коду</button>
-
-    <div class="onb-reset">
-      Что-то не работает?<br>
-      <a href="#" id="resetLink">Сбросить всё и начать заново</a>
-    </div>
   </div>
 
   <div class="onb-card" id="onb-create" style="display:none">
@@ -456,4 +384,74 @@
     <label class="onb-label">Название семьи</label>
     <input type="text" class="onb-input" id="createName" placeholder="Ивановы" maxlength="30">
 
-    <label class="onb-label">Пароль <span class="hint">(мин. 4 симв
+    <label class="onb-label">Пароль <span class="hint">(мин. 4 символа)</span></label>
+    <input type="text" class="onb-input" id="createPass" placeholder="••••" maxlength="40" autocomplete="off">
+
+    <div class="onb-error" id="createError"></div>
+    <button class="onb-btn primary" id="doCreate" style="margin-top:18px">Создать семью</button>
+  </div>
+
+  <div class="onb-card" id="onb-created" style="display:none">
+    <div class="onb-logo">🎉</div>
+    <div class="onb-title">Семья создана</div>
+    <div class="onb-sub">Передай этот код и пароль второму члену семьи.</div>
+
+    <div class="code-display">
+      <div class="lbl">Код семьи</div>
+      <div class="val" id="newCode">— — — — — —</div>
+    </div>
+
+    <div class="code-hint">
+      Пароль задан отдельно. Никому не пересылай код без пароля — вместе они открывают данные семьи.
+    </div>
+
+    <button class="onb-btn secondary" id="copyCode" style="margin-top:20px">📋 Скопировать код</button>
+    <button class="onb-btn primary" id="enterApp">Войти в приложение</button>
+  </div>
+
+  <div class="onb-card" id="onb-join" style="display:none">
+    <button class="onb-back" id="backFromJoin">← Назад</button>
+    <div class="onb-logo">🔑</div>
+    <div class="onb-title">Присоединиться</div>
+    <div class="onb-sub">Введи код семьи и пароль, которые тебе передал создатель.</div>
+
+    <label class="onb-label">Ваше имя</label>
+    <input type="text" class="onb-input" id="joinYourName" placeholder="Например, Аня" maxlength="30" autocomplete="off">
+
+    <label class="onb-label">Ваш аватар</label>
+    <div class="emoji-picker" id="joinEmojiPicker"></div>
+
+    <label class="onb-label">Код семьи</label>
+    <input type="text" class="onb-input code" id="joinCode" placeholder="XXXXXX" maxlength="6" autocomplete="off" autocapitalize="characters">
+
+    <label class="onb-label">Пароль</label>
+    <input type="text" class="onb-input" id="joinPass" placeholder="••••" maxlength="40" autocomplete="off">
+
+    <div class="onb-error" id="joinError"></div>
+    <button class="onb-btn primary" id="doJoin" style="margin-top:18px">Войти</button>
+  </div>
+</div>
+
+<!-- ================= ОСНОВНОЕ ПРИЛОЖЕНИЕ ================= -->
+<div class="app" id="app" style="display:none">
+
+  <div class="topbar">
+    <div class="logo">🏡 Family<span>Hub</span></div>
+    <div class="family-chip" id="familyChip">
+      <span class="dot"></span>
+      <span id="familyName">—</span>
+    </div>
+    <div class="today" id="todayLabel"></div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="tasks">✅ Задачи</button>
+    <button class="tab" data-tab="calendar">📅 Календарь</button>
+    <button class="tab" data-tab="shopping">🛒 Покупки</button>
+    <button class="tab" data-tab="family">👨‍👩‍👧 Семья</button>
+  </nav>
+
+  <section class="panel active" id="panel-tasks">
+    <div class="card">
+      <div class="add-form">
+   
