@@ -31,7 +31,7 @@
   .onb-logo{font-size:44px;margin-bottom:6px}
   .onb-title{font-size:24px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px}
   .onb-title span{color:var(--accent)}
-  .onb-sub{color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:26px}
+  .onb-sub{color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:22px}
   .onb-btn{
     display:block;width:100%;padding:15px;border:0;border-radius:14px;
     font:inherit;font-weight:700;font-size:15px;cursor:pointer;
@@ -49,7 +49,7 @@
   .onb-back:hover{color:var(--text)}
   .onb-label{
     display:block;text-align:left;font-size:13px;font-weight:700;
-    color:var(--muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px;
+    color:var(--muted);margin:14px 0 8px;text-transform:uppercase;letter-spacing:.4px;
   }
   .onb-label .hint{text-transform:none;letter-spacing:0;font-weight:500;color:#b3bacb;font-size:12px}
   .onb-input{
@@ -80,6 +80,28 @@
     font-variant-numeric:tabular-nums;padding-left:10px;
   }
   .code-hint{font-size:13px;color:var(--muted);line-height:1.5;margin-top:8px}
+
+  /* ---------- Emoji picker ---------- */
+  .emoji-picker{
+    display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
+    margin:0 auto;
+  }
+  .emoji-picker.small{
+    gap:6px;justify-content:flex-start;margin:10px 0 0;
+  }
+  .emoji-btn{
+    width:48px;height:48px;border-radius:12px;border:1.5px solid var(--line);
+    background:#f7f8fd;font-size:24px;line-height:1;cursor:pointer;
+    transition:.15s;display:flex;align-items:center;justify-content:center;
+    padding:0;font-family:inherit;color:inherit;
+  }
+  .emoji-btn:hover{border-color:#cfd5e8;background:#f0f2f9}
+  .emoji-btn.active{
+    border-color:var(--accent);background:var(--accent-soft);
+    box-shadow:0 0 0 3px var(--accent-soft);
+    transform:scale(1.05);
+  }
+  .emoji-picker.small .emoji-btn{width:40px;height:40px;font-size:20px;border-radius:10px}
 
   .topbar{
     display:flex;align-items:center;justify-content:space-between;
@@ -224,7 +246,7 @@
   }
   .del:hover{background:#ffecec;color:var(--danger)}
 
-  /* ---------- Редактирование имени ---------- */
+  /* ---------- Редактирование профиля ---------- */
   .edit-name-btn{
     flex:0 0 auto;border:0;background:transparent;color:#c6ccdb;cursor:pointer;
     font-size:15px;line-height:1;padding:6px 8px;border-radius:8px;transition:.15s;
@@ -233,15 +255,24 @@
   .name-edit-input{
     font:inherit;font-size:15px;font-weight:600;
     border:1px solid var(--accent);border-radius:8px;
-    padding:5px 10px;width:100%;max-width:230px;
+    padding:6px 10px;width:100%;max-width:230px;
     background:#fff;outline:none;color:var(--text);
     box-shadow:0 0 0 3px var(--accent-soft);
-    margin-bottom:2px;
   }
   .name-hint{
     font-size:11px;color:var(--accent);font-weight:600;margin-top:4px;
     display:inline-flex;align-items:center;gap:4px;
   }
+  .save-btn, .cancel-btn{
+    flex:0 0 auto;border:0;cursor:pointer;font:inherit;font-size:15px;
+    width:32px;height:32px;border-radius:8px;transition:.15s;
+    display:flex;align-items:center;justify-content:center;padding:0;
+    font-weight:700;
+  }
+  .save-btn{background:#e8f7ee;color:#12a05c}
+  .save-btn:hover{background:#d4f0df}
+  .cancel-btn{background:#f0f2f9;color:var(--muted)}
+  .cancel-btn:hover{background:#e6e9f4;color:var(--text)}
 
   .empty{text-align:center;padding:34px 16px;color:var(--muted);font-size:14px}
   .empty .big{font-size:34px;display:block;margin-bottom:8px;opacity:.55}
@@ -296,12 +327,14 @@
   .progress-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#6c5ce7,#a29bfe);transition:width .3s}
 
   .member{
-    display:flex;align-items:center;gap:14px;background:#fff;border-radius:14px;
+    display:flex;align-items:flex-start;gap:14px;background:#fff;border-radius:14px;
     padding:13px 15px;box-shadow:var(--shadow);margin-bottom:8px;
   }
+  .member-body{flex:1;min-width:0}
+  .member-actions{display:flex;gap:4px;flex:0 0 auto;align-items:flex-start}
   .avatar{
     width:44px;height:44px;border-radius:50%;display:flex;align-items:center;
-    justify-content:center;font-size:21px;flex:0 0 auto;overflow:hidden;
+    justify-content:center;font-size:22px;flex:0 0 auto;overflow:hidden;
   }
   .avatar img{width:100%;height:100%;object-fit:cover}
   .member-name{font-weight:600;font-size:15px}
@@ -345,6 +378,9 @@
     <label class="onb-label">Ваше имя</label>
     <input type="text" class="onb-input" id="createYourName" placeholder="Например, Аня" maxlength="30" autocomplete="off">
 
+    <label class="onb-label">Ваш аватар</label>
+    <div class="emoji-picker" id="createEmojiPicker"></div>
+
     <label class="onb-label">Название семьи</label>
     <input type="text" class="onb-input" id="createName" placeholder="Ивановы" maxlength="30">
 
@@ -381,6 +417,9 @@
 
     <label class="onb-label">Ваше имя</label>
     <input type="text" class="onb-input" id="joinYourName" placeholder="Например, Аня" maxlength="30" autocomplete="off">
+
+    <label class="onb-label">Ваш аватар</label>
+    <div class="emoji-picker" id="joinEmojiPicker"></div>
 
     <label class="onb-label">Код семьи</label>
     <input type="text" class="onb-input code" id="joinCode" placeholder="XXXXXX" maxlength="6" autocomplete="off" autocapitalize="characters">
@@ -510,11 +549,10 @@
       <p class="section-title">Добавить члена без Telegram</p>
       <div class="add-form">
         <input type="text" id="memberName" class="grow" placeholder="Имя" maxlength="20">
-        <input type="text" id="memberEmoji" class="xs" placeholder="🙂" maxlength="2"
-               style="text-align:center;font-size:18px">
         <input type="color" id="memberColor" value="#6c5ce7">
         <button class="btn" id="addMemberBtn">Добавить</button>
       </div>
+      <div class="emoji-picker small" id="memberEmojiPicker" style="margin-top:12px"></div>
     </div>
   </section>
 
@@ -536,12 +574,25 @@ const firebaseConfig = {
 };
 
 /* ============================================================
+   НАБОР АВАТАРОК
+   ============================================================ */
+const AVATAR_EMOJIS = [
+  { emoji: '🧑', label: 'Человек' },
+  { emoji: '👩', label: 'Девушка' },
+  { emoji: '👴', label: 'Дед' },
+  { emoji: '👵', label: 'Бабуля' },
+  { emoji: '🧒', label: 'Ребёнок' }
+];
+const DEFAULT_EMOJI = AVATAR_EMOJIS[0].emoji; // 🧑
+
+/* ============================================================
    ОБЩИЕ УТИЛИТЫ
    ============================================================ */
-const LS_SESSION = 'familyhub.session';
-const LS_DEVICE  = 'familyhub.deviceId';
-const LS_LOCAL   = 'familyhub.localState';
-const LS_MY_NAME = 'familyhub.myName';       // запоминаем имя пользователя между сессиями
+const LS_SESSION  = 'familyhub.session';
+const LS_DEVICE   = 'familyhub.deviceId';
+const LS_LOCAL    = 'familyhub.localState';
+const LS_MY_NAME  = 'familyhub.myName';
+const LS_MY_EMOJI = 'familyhub.myEmoji';
 const uid = () => Math.random().toString(36).slice(2, 10);
 const $ = id => document.getElementById(id);
 const FAMILY = 'all';
@@ -577,12 +628,42 @@ function generateFamilyCode() {
   return code;
 }
 
-/* Сохранённое "моё имя" между сессиями */
-function getSavedMyName() { return localStorage.getItem(LS_MY_NAME) || ''; }
-function setSavedMyName(name) {
-  if (name && name.trim()) localStorage.setItem(LS_MY_NAME, name.trim());
+/* ---------- Сохранённые имя и аватар ---------- */
+function getSavedMyName()  { return localStorage.getItem(LS_MY_NAME) || ''; }
+function setSavedMyName(n) { if (n && n.trim()) localStorage.setItem(LS_MY_NAME, n.trim()); }
+function getSavedMyEmoji() { return localStorage.getItem(LS_MY_EMOJI) || ''; }
+function setSavedMyEmoji(e) { if (e) localStorage.setItem(LS_MY_EMOJI, e); }
+
+/* ============================================================
+   EMOJI PICKER
+   ============================================================ */
+function buildEmojiPicker(container, selected) {
+  if (!container) return;
+  const initial = selected || DEFAULT_EMOJI;
+  container.dataset.selected = initial;
+  container.innerHTML = AVATAR_EMOJIS.map(item => `
+    <button type="button" class="emoji-btn ${item.emoji === initial ? 'active' : ''}"
+            data-emoji="${item.emoji}" title="${item.label}" aria-label="${item.label}">
+      ${item.emoji}
+    </button>
+  `).join('');
+
+  container.querySelectorAll('.emoji-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      container.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      container.dataset.selected = btn.dataset.emoji;
+    });
+  });
 }
 
+function getEmojiFromPicker(container) {
+  return (container && container.dataset.selected) || DEFAULT_EMOJI;
+}
+
+/* ============================================================
+   ТЕКУЩИЙ ПОЛЬЗОВАТЕЛЬ
+   ============================================================ */
 function getCurrentUser() {
   const tg = window.Telegram?.WebApp;
   if (tg?.initDataUnsafe?.user) {
@@ -590,7 +671,8 @@ function getCurrentUser() {
     return {
       id: String(u.id),
       name: [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username || 'Гость',
-      photo: u.photo_url || null
+      photo: u.photo_url || null,
+      emoji: getSavedMyEmoji() || DEFAULT_EMOJI
     };
   }
   let deviceId = localStorage.getItem(LS_DEVICE);
@@ -598,12 +680,12 @@ function getCurrentUser() {
     deviceId = 'device-' + uid();
     localStorage.setItem(LS_DEVICE, deviceId);
   }
-  // Если раньше пользователь задавал имя — используем его
   const savedName = getSavedMyName();
   return {
     id: deviceId,
     name: savedName || ('Устройство ' + deviceId.slice(-4)),
-    photo: null
+    photo: null,
+    emoji: getSavedMyEmoji() || DEFAULT_EMOJI
   };
 }
 
@@ -663,10 +745,11 @@ function localSave(docId, data) {
 /* ============================================================
    РАБОТА С СЕМЬЁЙ
    ============================================================ */
-async function createFamily(familyName, password, myName) {
+async function createFamily(familyName, password, myName, myEmoji) {
   const code = generateFamilyCode();
   const docId = await sha256(code + ':' + password);
   const displayName = (myName && myName.trim()) || currentUser.name;
+  const emoji = myEmoji || DEFAULT_EMOJI;
 
   const initial = {
     ...defaultState(),
@@ -675,7 +758,7 @@ async function createFamily(familyName, password, myName) {
       id: currentUser.id,
       name: displayName,
       photo: currentUser.photo,
-      emoji: '🙂',
+      emoji,
       color: '#6c5ce7',
       isTelegramUser: !!currentUser.photo || currentUser.id.length > 12
     }],
@@ -690,12 +773,13 @@ async function createFamily(familyName, password, myName) {
   }
 
   setSavedMyName(displayName);
+  setSavedMyEmoji(emoji);
   session = { docId, code, name: initial.name };
   localStorage.setItem(LS_SESSION, JSON.stringify(session));
   return session;
 }
 
-async function joinFamily(code, password, myName) {
+async function joinFamily(code, password, myName, myEmoji) {
   const docId = await sha256(code.toUpperCase() + ':' + password);
   let data = null;
 
@@ -712,15 +796,17 @@ async function joinFamily(code, password, myName) {
   const already = (data.members || []).some(m => m.id === currentUser.id);
   if (!already) {
     const displayName = (myName && myName.trim()) || currentUser.name;
+    const emoji = myEmoji || DEFAULT_EMOJI;
     data.members = [...(data.members || []), {
       id: currentUser.id,
       name: displayName,
       photo: currentUser.photo,
-      emoji: '🙂',
+      emoji,
       color: '#6c5ce7',
       isTelegramUser: !!currentUser.photo || currentUser.id.length > 12
     }];
     setSavedMyName(displayName);
+    setSavedMyEmoji(emoji);
 
     if (db) {
       const { doc, setDoc } = firestoreFns;
@@ -803,7 +889,11 @@ function showOnbScreen(id) {
   });
 }
 
-/* Предзаполняем поле "Ваше имя" сохранённым именем */
+/* Инициализируем пикеры в онбординге */
+buildEmojiPicker($('createEmojiPicker'), getSavedMyEmoji());
+buildEmojiPicker($('joinEmojiPicker'), getSavedMyEmoji());
+
+/* Предзаполняем имя из прошлых сессий */
 (function prefillNames() {
   const saved = getSavedMyName();
   if (saved) {
@@ -822,6 +912,7 @@ $('backFromJoin').addEventListener('click', () => showOnbScreen('onb-choose'));
 
 $('doCreate').addEventListener('click', async () => {
   const yourName = $('createYourName').value.trim();
+  const yourEmoji = getEmojiFromPicker($('createEmojiPicker'));
   const name = $('createName').value.trim() || 'Моя семья';
   const pass = $('createPass').value.trim();
   const err = $('createError');
@@ -839,7 +930,7 @@ $('doCreate').addEventListener('click', async () => {
   err.classList.remove('show');
 
   try {
-    const s = await createFamily(name, pass, yourName);
+    const s = await createFamily(name, pass, yourName, yourEmoji);
     $('newCode').textContent = s.code.split('').join(' ');
     showOnbScreen('onb-created');
   } catch (e) {
@@ -866,6 +957,7 @@ $('enterApp').addEventListener('click', async () => {
 
 $('doJoin').addEventListener('click', async () => {
   const yourName = $('joinYourName').value.trim();
+  const yourEmoji = getEmojiFromPicker($('joinEmojiPicker'));
   const code = $('joinCode').value.trim().toUpperCase();
   const pass = $('joinPass').value.trim();
   const err = $('joinError');
@@ -883,7 +975,7 @@ $('doJoin').addEventListener('click', async () => {
   err.classList.remove('show');
 
   try {
-    const s = await joinFamily(code, pass, yourName);
+    const s = await joinFamily(code, pass, yourName, yourEmoji);
     if (!s) {
       err.textContent = 'Семья не найдена или неверный пароль';
       err.classList.add('show');
@@ -1029,7 +1121,7 @@ let taskFilter = 'all';
 
 function renderMemberSelects() {
   const opts = state.members
-    .map(m => `<option value="${m.id}">${esc(m.emoji || '🙂')} ${esc(m.name)}</option>`)
+    .map(m => `<option value="${m.id}">${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}</option>`)
     .join('');
   $('taskAssignee').innerHTML = opts;
   $('eventMember').innerHTML = opts;
@@ -1040,7 +1132,7 @@ function renderTaskFilters() {
   let html = `<button class="chip-btn ${taskFilter === 'all' ? 'active' : ''}" data-f="all">Все</button>`;
   state.members.forEach(m => {
     html += `<button class="chip-btn ${taskFilter === m.id ? 'active' : ''}" data-f="${m.id}">
-      ${esc(m.emoji || '🙂')} ${esc(m.name)}</button>`;
+      ${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}</button>`;
   });
   wrap.innerHTML = html;
 }
@@ -1085,7 +1177,7 @@ function renderTasks() {
     const chips = [];
     if (m) {
       const meClass = isMe(m.id) ? 'chip-me' : '';
-      chips.push(`<span class="chip ${meClass}" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji || '🙂')} ${esc(m.name)}${isMe(m.id) ? ' · это я' : ''}</span>`);
+      chips.push(`<span class="chip ${meClass}" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}${isMe(m.id) ? ' · это я' : ''}</span>`);
     }
     if (t.due) chips.push(`<span class="chip ${overdue ? 'overdue' : ''}">📅 ${fmtDate(t.due)}${overdue ? ' · просрочено' : ''}</span>`);
     if (t.priority && t.priority !== 'normal') chips.push(`<span class="chip prio-${t.priority}">${PRIO_LABEL[t.priority]}</span>`);
@@ -1248,7 +1340,7 @@ function renderDayEvents() {
     if (family) chips.push(`<span class="chip chip-family">👨‍👩‍👧 Вся семья</span>`);
     else if (m) {
       const meClass = isMe(m.id) ? 'chip-me' : '';
-      chips.push(`<span class="chip ${meClass}" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji || '🙂')} ${esc(m.name)}${isMe(m.id) ? ' · это я' : ''}</span>`);
+      chips.push(`<span class="chip ${meClass}" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}${isMe(m.id) ? ' · это я' : ''}</span>`);
     }
 
     return `<div class="item" data-id="${e.id}">
@@ -1388,26 +1480,25 @@ function renderMembers() {
 
     const avatarInner = m.photo
       ? `<img src="${esc(m.photo)}" alt="">`
-      : esc(m.emoji || '🙂');
+      : esc(m.emoji || DEFAULT_EMOJI);
 
     const meBadge = me ? ' <span style="color:#12a05c;font-size:11px">· вы</span>' : '';
     const tgBadge = m.isTelegramUser ? ' <span style="color:#6c5ce7;font-size:11px">· TG</span>' : '';
 
-    // Подсказка если имя дефолтное (только для себя)
     const needNameHint = me && /^Устройство /.test(m.name);
 
-    const actionBtn = me
-      ? `<button class="edit-name-btn" title="Изменить имя">✏️</button>`
+    const actions = me
+      ? `<button class="edit-name-btn" title="Изменить имя и аватар">✏️</button>`
       : `<button class="del" title="Удалить">✕</button>`;
 
     return `<div class="member" data-id="${m.id}">
       <div class="avatar" style="background:${m.color}22">${avatarInner}</div>
-      <div style="flex:1;min-width:0">
+      <div class="member-body">
         <div class="member-name">${esc(m.name)}${meBadge}${tgBadge}</div>
         <div class="member-sub">${open} активных · ${done} выполнено</div>
-        ${needNameHint ? `<div class="name-hint">✏️ Нажмите, чтобы задать имя</div>` : ''}
+        ${needNameHint ? `<div class="name-hint">✏️ Нажмите, чтобы задать имя и аватар</div>` : ''}
       </div>
-      ${actionBtn}
+      <div class="member-actions">${actions}</div>
     </div>`;
   }).join('');
 
@@ -1416,23 +1507,31 @@ function renderMembers() {
   }
 }
 
-/* ---------- Inline-редактирование своего имени ---------- */
-function startEditMyName(memberEl) {
+/* ---------- Inline-редактирование своего профиля (имя + аватар) ---------- */
+function startEditProfile(memberEl) {
   const me = state.members.find(m => m.id === currentUser.id);
   if (!me) return;
 
-  const nameDiv = memberEl.querySelector('.member-name');
-  if (!nameDiv) return;
+  const body = memberEl.querySelector('.member-body');
+  const actions = memberEl.querySelector('.member-actions');
+  if (!body || !actions) return;
+
   const oldName = me.name;
+  const oldEmoji = me.emoji || DEFAULT_EMOJI;
 
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.value = oldName;
-  input.className = 'name-edit-input';
-  input.maxLength = 30;
-  input.autocomplete = 'off';
+  body.innerHTML = `
+    <input type="text" class="name-edit-input" id="editProfileName"
+           value="${esc(oldName)}" maxlength="30" autocomplete="off">
+    <div class="emoji-picker small" id="editProfileEmoji"></div>
+  `;
+  buildEmojiPicker($('editProfileEmoji'), oldEmoji);
 
-  nameDiv.replaceWith(input);
+  actions.innerHTML = `
+    <button class="save-btn" id="saveProfileBtn" title="Сохранить">✓</button>
+    <button class="cancel-btn" id="cancelProfileBtn" title="Отмена">✕</button>
+  `;
+
+  const input = $('editProfileName');
   input.focus();
   input.select();
 
@@ -1442,11 +1541,18 @@ function startEditMyName(memberEl) {
     if (finished) return;
     finished = true;
     const newName = input.value.trim();
-    if (newName && newName !== oldName) {
+    const newEmoji = getEmojiFromPicker($('editProfileEmoji'));
+    if (!newName) { cancel(); return; }
+
+    if (newName !== oldName || newEmoji !== oldEmoji) {
       me.name = newName;
+      me.emoji = newEmoji;
+      // Пользователь явно выбрал эмодзи — убираем фото TG, чтобы показать эмодзи
+      if (newEmoji !== oldEmoji && me.photo) me.photo = null;
       setSavedMyName(newName);
+      setSavedMyEmoji(newEmoji);
       save();
-      toast('Имя сохранено: ' + newName);
+      toast('Профиль обновлён');
     }
     renderMembers();
   };
@@ -1457,12 +1563,17 @@ function startEditMyName(memberEl) {
     renderMembers();
   };
 
+  $('saveProfileBtn').addEventListener('click', commit);
+  $('cancelProfileBtn').addEventListener('click', cancel);
+
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') { e.preventDefault(); commit(); }
     if (e.key === 'Escape') { e.preventDefault(); cancel(); }
   });
-  input.addEventListener('blur', commit);
 }
+
+/* Пикер эмодзи для формы "добавить без Telegram" */
+buildEmojiPicker($('memberEmojiPicker'), DEFAULT_EMOJI);
 
 $('addMemberBtn').addEventListener('click', addMember);
 $('memberName').addEventListener('keydown', e => { if (e.key === 'Enter') addMember(); });
@@ -1470,15 +1581,15 @@ $('memberName').addEventListener('keydown', e => { if (e.key === 'Enter') addMem
 function addMember() {
   const name = $('memberName').value.trim();
   if (!name) { $('memberName').focus(); return; }
+  const emoji = getEmojiFromPicker($('memberEmojiPicker'));
   state.members.push({
     id: uid(),
     name,
-    emoji: $('memberEmoji').value.trim() || '🙂',
+    emoji,
     color: $('memberColor').value,
     isTelegramUser: false
   });
   $('memberName').value = '';
-  $('memberEmoji').value = '';
   save();
   renderAll();
 }
@@ -1487,13 +1598,13 @@ $('memberList').addEventListener('click', e => {
   const row = e.target.closest('.member');
   if (!row) return;
 
-  // Клик по карандашу → редактирование своего имени
+  // Карандаш → редактирование своего профиля
   if (e.target.closest('.edit-name-btn')) {
-    startEditMyName(row);
+    startEditProfile(row);
     return;
   }
 
-  // Клик по крестику → удаление члена семьи (нельзя удалить себя)
+  // Крестик → удаление члена семьи
   if (!e.target.closest('.del')) return;
   const id = row.dataset.id;
   if (isMe(id)) return;
