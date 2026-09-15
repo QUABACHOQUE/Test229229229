@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FamilyHub — семейный CRM</title>
+<title>FamilyHub</title>
 <style>
   *{box-sizing:border-box}
   :root{
@@ -19,12 +19,80 @@
   }
   .app{max-width:940px;margin:0 auto;padding:0 16px 60px}
 
+  .onboarding{
+    position:fixed;inset:0;background:var(--bg);z-index:100;
+    display:flex;align-items:center;justify-content:center;padding:20px;
+    overflow-y:auto;
+  }
+  .onb-card{
+    width:100%;max-width:420px;background:var(--card);border-radius:20px;
+    padding:32px 24px;box-shadow:0 8px 40px rgba(30,40,80,.1);text-align:center;
+  }
+  .onb-logo{font-size:44px;margin-bottom:6px}
+  .onb-title{font-size:24px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px}
+  .onb-title span{color:var(--accent)}
+  .onb-sub{color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:26px}
+  .onb-btn{
+    display:block;width:100%;padding:15px;border:0;border-radius:14px;
+    font:inherit;font-weight:700;font-size:15px;cursor:pointer;
+    transition:.15s;margin-bottom:10px;text-align:center;
+  }
+  .onb-btn.primary{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(108,92,231,.28)}
+  .onb-btn.primary:hover{filter:brightness(1.08)}
+  .onb-btn.secondary{background:#f0f2f9;color:var(--text)}
+  .onb-btn.secondary:hover{background:#e6e9f4}
+  .onb-back{
+    display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;
+    color:var(--muted);font:inherit;font-weight:600;font-size:14px;cursor:pointer;
+    padding:6px 0;margin-bottom:14px;
+  }
+  .onb-back:hover{color:var(--text)}
+  .onb-label{
+    display:block;text-align:left;font-size:13px;font-weight:700;
+    color:var(--muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px;
+  }
+  .onb-input{
+    width:100%;font:inherit;font-size:16px;padding:14px 16px;border-radius:12px;
+    border:1px solid var(--line);background:#f7f8fd;outline:none;transition:.15s;
+    text-align:center;
+  }
+  .onb-input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+  .onb-input.code{
+    font-size:26px;font-weight:800;letter-spacing:8px;
+    font-variant-numeric:tabular-nums;text-transform:uppercase;
+    padding-left:16px;
+  }
+  .onb-error{
+    background:#ffecec;color:var(--danger);font-size:13px;font-weight:600;
+    padding:10px 14px;border-radius:10px;margin-top:14px;display:none;
+  }
+  .onb-error.show{display:block}
+
+  .code-display{
+    background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;
+    border-radius:16px;padding:22px;margin:20px 0;
+  }
+  .code-display .lbl{font-size:12px;opacity:.85;font-weight:700;
+    text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+  .code-display .val{
+    font-size:38px;font-weight:900;letter-spacing:10px;
+    font-variant-numeric:tabular-nums;padding-left:10px;
+  }
+  .code-hint{font-size:13px;color:var(--muted);line-height:1.5;margin-top:8px}
+
   .topbar{
     display:flex;align-items:center;justify-content:space-between;
     padding:20px 0 14px;gap:12px;flex-wrap:wrap;
   }
   .logo{font-size:20px;font-weight:800;letter-spacing:-.3px}
   .logo span{color:var(--accent)}
+  .family-chip{
+    display:inline-flex;align-items:center;gap:8px;background:#fff;
+    padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700;
+    box-shadow:var(--shadow);color:var(--text);
+  }
+  .family-chip .dot{width:8px;height:8px;border-radius:50%;background:#12a05c}
+  .family-chip.offline .dot{background:#c6ccdb}
   .today{font-size:13px;color:var(--muted);font-weight:500}
 
   .tabs{
@@ -75,7 +143,6 @@
   .add-form .sm{flex:0 1 150px}
   .add-form .xs{flex:0 0 130px}
 
-  /* ---------- Блок времени "с — до" ---------- */
   .time-range{
     display:flex;align-items:center;gap:4px;
     background:#f7f8fd;border:1px solid var(--line);border-radius:10px;
@@ -97,7 +164,6 @@
   }
   .time-range .time-input::placeholder{color:#c6ccdb;font-weight:400}
 
-  /* ---------- Переключатель "Вся семья" ---------- */
   .toggle-family{
     display:flex;align-items:center;gap:7px;padding:10px 14px;
     border:1px solid var(--line);border-radius:10px;background:#f7f8fd;
@@ -150,6 +216,7 @@
     background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;
   }
   .chip.chip-duration{background:#fff4e6;color:#c47f17}
+  .chip.chip-me{background:#eefaf3;color:#12a05c}
   .del{
     flex:0 0 auto;border:0;background:transparent;color:#c6ccdb;cursor:pointer;
     font-size:16px;line-height:1;padding:4px 6px;border-radius:8px;transition:.15s;
@@ -210,23 +277,105 @@
 
   .member{
     display:flex;align-items:center;gap:14px;background:#fff;border-radius:14px;
-    padding:13px 15px;box-shadow:var(--shadow);
+    padding:13px 15px;box-shadow:var(--shadow);margin-bottom:8px;
   }
   .avatar{
     width:44px;height:44px;border-radius:50%;display:flex;align-items:center;
-    justify-content:center;font-size:21px;flex:0 0 auto;
+    justify-content:center;font-size:21px;flex:0 0 auto;overflow:hidden;
   }
+  .avatar img{width:100%;height:100%;object-fit:cover}
   .member-name{font-weight:600;font-size:15px}
   .member-sub{font-size:12.5px;color:var(--muted);margin-top:2px}
 
   .section-title{font-size:15px;font-weight:700;margin:0 0 12px}
+  .family-info{display:flex;flex-direction:column;gap:10px}
+  .family-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .family-row .lbl{font-size:13px;color:var(--muted);font-weight:600}
+  .family-code-big{
+    font-size:22px;font-weight:800;letter-spacing:6px;
+    font-variant-numeric:tabular-nums;color:var(--accent);
+  }
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
+    background:#1e2330;color:#fff;padding:12px 20px;border-radius:12px;
+    font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);
+    opacity:0;transition:.3s;z-index:200;pointer-events:none;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
-<div class="app">
+
+<!-- ================= ОНБОРДИНГ ================= -->
+<div class="onboarding" id="onboarding">
+  <div class="onb-card" id="onb-choose">
+    <div class="onb-logo">🏡</div>
+    <div class="onb-title">Family<span>Hub</span></div>
+    <div class="onb-sub">Семейный органайзер: задачи, календарь, покупки.<br>Все данные общие для членов семьи.</div>
+    <button class="onb-btn primary" id="goCreate">Создать новую семью</button>
+    <button class="onb-btn secondary" id="goJoin">Присоединиться по коду</button>
+  </div>
+
+  <div class="onb-card" id="onb-create" style="display:none">
+    <button class="onb-back" id="backFromCreate">← Назад</button>
+    <div class="onb-logo">✨</div>
+    <div class="onb-title">Новая семья</div>
+    <div class="onb-sub">Придумай пароль и передай его близким вместе с кодом семьи.</div>
+
+    <label class="onb-label">Название семьи</label>
+    <input type="text" class="onb-input" id="createName" placeholder="Ивановы" maxlength="30">
+
+    <label class="onb-label">Пароль (мин. 4 символа)</label>
+    <input type="text" class="onb-input" id="createPass" placeholder="••••" maxlength="40" autocomplete="off">
+
+    <div class="onb-error" id="createError"></div>
+    <button class="onb-btn primary" id="doCreate" style="margin-top:18px">Создать семью</button>
+  </div>
+
+  <div class="onb-card" id="onb-created" style="display:none">
+    <div class="onb-logo">🎉</div>
+    <div class="onb-title">Семья создана</div>
+    <div class="onb-sub">Передай этот код и пароль второму члену семьи.</div>
+
+    <div class="code-display">
+      <div class="lbl">Код семьи</div>
+      <div class="val" id="newCode">— — — — — —</div>
+    </div>
+
+    <div class="code-hint">
+      Пароль задан отдельно. Никому не пересылай код без пароля — вместе они открывают данные семьи.
+    </div>
+
+    <button class="onb-btn secondary" id="copyCode" style="margin-top:20px">📋 Скопировать код</button>
+    <button class="onb-btn primary" id="enterApp">Войти в приложение</button>
+  </div>
+
+  <div class="onb-card" id="onb-join" style="display:none">
+    <button class="onb-back" id="backFromJoin">← Назад</button>
+    <div class="onb-logo">🔑</div>
+    <div class="onb-title">Присоединиться</div>
+    <div class="onb-sub">Введи код семьи и пароль, которые тебе передал создатель.</div>
+
+    <label class="onb-label">Код семьи</label>
+    <input type="text" class="onb-input code" id="joinCode" placeholder="XXXXXX" maxlength="6" autocomplete="off" autocapitalize="characters">
+
+    <label class="onb-label">Пароль</label>
+    <input type="text" class="onb-input" id="joinPass" placeholder="••••" maxlength="40" autocomplete="off">
+
+    <div class="onb-error" id="joinError"></div>
+    <button class="onb-btn primary" id="doJoin" style="margin-top:18px">Войти</button>
+  </div>
+</div>
+
+<!-- ================= ОСНОВНОЕ ПРИЛОЖЕНИЕ ================= -->
+<div class="app" id="app" style="display:none">
 
   <div class="topbar">
     <div class="logo">🏡 Family<span>Hub</span></div>
+    <div class="family-chip" id="familyChip">
+      <span class="dot"></span>
+      <span id="familyName">—</span>
+    </div>
     <div class="today" id="todayLabel"></div>
   </div>
 
@@ -237,7 +386,6 @@
     <button class="tab" data-tab="family">👨‍👩‍👧 Семья</button>
   </nav>
 
-  <!-- ================= ЗАДАЧИ ================= -->
   <section class="panel active" id="panel-tasks">
     <div class="card">
       <div class="add-form">
@@ -258,7 +406,6 @@
     <div class="list" id="taskList"></div>
   </section>
 
-  <!-- ================= КАЛЕНДАРЬ ================= -->
   <section class="panel" id="panel-calendar">
     <div class="card">
       <div class="cal-head">
@@ -278,14 +425,14 @@
       <div class="add-form">
         <input type="text" id="eventTitle" class="grow" placeholder="Новое событие…">
 
-        <div class="time-range" title="Время начала и окончания — можно ввести только час, минуты подставятся">
+        <div class="time-range" title="Можно ввести только час — минуты подставятся">
           <span class="time-label">с</span>
           <input type="text" id="eventTime" class="time-input"
-                 inputmode="numeric" placeholder="13:00" aria-label="Время начала" maxlength="5">
+                 inputmode="numeric" placeholder="13:00" maxlength="5">
           <span class="dash">—</span>
           <span class="time-label">до</span>
           <input type="text" id="eventTimeEnd" class="time-input"
-                 inputmode="numeric" placeholder="14:00" aria-label="Время окончания" maxlength="5">
+                 inputmode="numeric" placeholder="14:00" maxlength="5">
         </div>
 
         <select id="eventMember" class="sm"></select>
@@ -299,11 +446,10 @@
     </div>
   </section>
 
-  <!-- ================= ПОКУПКИ ================= -->
   <section class="panel" id="panel-shopping">
     <div class="card">
       <div class="add-form">
-        <input type="text" id="shopInput" class="grow" placeholder="Что купить? (например, молоко)">
+        <input type="text" id="shopInput" class="grow" placeholder="Что купить?">
         <button class="btn" id="addShopBtn">Добавить</button>
       </div>
     </div>
@@ -317,32 +463,58 @@
     </div>
   </section>
 
-  <!-- ================= СЕМЬЯ ================= -->
   <section class="panel" id="panel-family">
     <div class="card">
-      <p class="section-title">Добавить члена семьи</p>
-      <div class="add-form">
-        <input type="text" id="memberName" class="grow" placeholder="Имя" maxlength="20">
-        <input type="text" id="memberEmoji" class="xs" placeholder="🙂" maxlength="2" style="text-align:center;font-size:18px">
-        <input type="color" id="memberColor" value="#6c5ce7">
-        <button class="btn" id="addMemberBtn">Добавить</button>
+      <p class="section-title">Наша семья</p>
+      <div class="family-info">
+        <div class="family-row">
+          <span class="lbl">Код для приглашения</span>
+          <span class="family-code-big" id="showFamilyCode">——————</span>
+        </div>
+        <div class="family-row">
+          <button class="btn ghost" id="copyFamilyCode">📋 Скопировать код</button>
+          <button class="btn ghost" id="leaveBtn">🚪 Выйти из семьи</button>
+        </div>
       </div>
     </div>
 
     <div class="list" id="memberList"></div>
 
-    <div style="margin-top:20px">
-      <button class="btn ghost" id="resetBtn">Сбросить все данные</button>
+    <div class="card" style="margin-top:14px">
+      <p class="section-title">Добавить члена без Telegram</p>
+      <div class="add-form">
+        <input type="text" id="memberName" class="grow" placeholder="Имя" maxlength="20">
+        <input type="text" id="memberEmoji" class="xs" placeholder="🙂" maxlength="2"
+               style="text-align:center;font-size:18px">
+        <input type="color" id="memberColor" value="#6c5ce7">
+        <button class="btn" id="addMemberBtn">Добавить</button>
+      </div>
     </div>
   </section>
 
 </div>
 
-<script>
+<div class="toast" id="toast"></div>
+
+<script type="module">
 /* ============================================================
-   СОСТОЯНИЕ
+   FIREBASE CONFIG — твой проект
    ============================================================ */
-const LS_KEY = 'familyhub.v1';
+const firebaseConfig = {
+  apiKey: "AIzaSyCu797UMMMTpsT5ENjYj3KDIsxO5Zl4D-0",
+  authDomain: "familyhub-747bc.firebaseapp.com",
+  projectId: "familyhub-747bc",
+  storageBucket: "familyhub-747bc.firebasestorage.app",
+  messagingSenderId: "1016586691620",
+  appId: "1:1016586691620:web:3562f2afc1ab690b31e4b1"
+};
+
+/* ============================================================
+   ОБЩИЕ УТИЛИТЫ
+   ============================================================ */
+const LS_SESSION = 'familyhub.session';
+const LS_DEVICE  = 'familyhub.deviceId';
+const LS_LOCAL   = 'familyhub.localState';
 const uid = () => Math.random().toString(36).slice(2, 10);
 const $ = id => document.getElementById(id);
 const FAMILY = 'all';
@@ -352,99 +524,386 @@ function iso(d) {
 }
 const TODAY = iso(new Date());
 
-function defaultState() {
-  return {
-    members: [
-      { id: uid(), name: 'Мама',  emoji: '👩', color: '#e84393' },
-      { id: uid(), name: 'Папа',  emoji: '👨', color: '#0984e3' },
-      { id: uid(), name: 'Ребёнок', emoji: '🧒', color: '#00b894' }
-    ],
-    tasks: [],
-    events: [],
-    shopping: []
-  };
-}
-
-let state;
-try {
-  state = JSON.parse(localStorage.getItem(LS_KEY)) || defaultState();
-} catch (e) { state = defaultState(); }
-
-function save() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {}
-}
-
 function esc(s) {
   return String(s).replace(/[&<>"']/g, c =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+async function sha256(str) {
+  const buf = new TextEncoder().encode(str);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function generateFamilyCode() {
+  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
+function getCurrentUser() {
+  const tg = window.Telegram?.WebApp;
+  if (tg?.initDataUnsafe?.user) {
+    const u = tg.initDataUnsafe.user;
+    return {
+      id: String(u.id),
+      name: [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username || 'Гость',
+      photo: u.photo_url || null
+    };
+  }
+  let deviceId = localStorage.getItem(LS_DEVICE);
+  if (!deviceId) {
+    deviceId = 'device-' + uid();
+    localStorage.setItem(LS_DEVICE, deviceId);
+  }
+  return { id: deviceId, name: 'Устройство ' + deviceId.slice(-4), photo: null };
+}
+
+/* ============================================================
+   СОСТОЯНИЕ
+   ============================================================ */
+const currentUser = getCurrentUser();
+
+function defaultState() {
+  return { name: 'Моя семья', members: [], tasks: [], events: [], shopping: [] };
+}
+
+let state = defaultState();
+let session = null;
+let db = null;
+let firestoreFns = null;
+let unsubscribe = null;
+let applyingRemote = false;
+let saveTimer = null;
+
+try {
+  session = JSON.parse(localStorage.getItem(LS_SESSION) || 'null');
+} catch (e) { session = null; }
+
+/* ============================================================
+   FIREBASE INIT
+   ============================================================ */
+async function initFirebase() {
+  try {
+    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const fs = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const app = initializeApp(firebaseConfig);
+    db = fs.getFirestore(app);
+    firestoreFns = fs;
+    console.log('Firebase подключён');
+    return true;
+  } catch (e) {
+    console.error('Firebase init failed:', e);
+    toast('Не удалось подключиться к облаку — работаем локально');
+    return false;
+  }
+}
+
+/* ============================================================
+   ЛОКАЛЬНЫЙ РЕЖИМ (fallback)
+   ============================================================ */
+function localLoad(docId) {
+  try {
+    const raw = localStorage.getItem(LS_LOCAL + ':' + docId);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
+}
+function localSave(docId, data) {
+  localStorage.setItem(LS_LOCAL + ':' + docId, JSON.stringify(data));
+}
+
+/* ============================================================
+   РАБОТА С СЕМЬЁЙ
+   ============================================================ */
+async function createFamily(name, password) {
+  const code = generateFamilyCode();
+  const docId = await sha256(code + ':' + password);
+  const initial = {
+    ...defaultState(),
+    name: name || 'Моя семья',
+    members: [{
+      id: currentUser.id,
+      name: currentUser.name,
+      photo: currentUser.photo,
+      emoji: '🙂',
+      color: '#6c5ce7',
+      isTelegramUser: true
+    }],
+    createdAt: Date.now()
+  };
+
+  if (db) {
+    const { doc, setDoc } = firestoreFns;
+    await setDoc(doc(db, 'families', docId), initial);
+  } else {
+    localSave(docId, initial);
+  }
+
+  session = { docId, code, name: initial.name };
+  localStorage.setItem(LS_SESSION, JSON.stringify(session));
+  return session;
+}
+
+async function joinFamily(code, password) {
+  const docId = await sha256(code.toUpperCase() + ':' + password);
+  let data = null;
+
+  if (db) {
+    const { doc, getDoc } = firestoreFns;
+    const snap = await getDoc(doc(db, 'families', docId));
+    if (snap.exists()) data = snap.data();
+  } else {
+    data = localLoad(docId);
+  }
+
+  if (!data) return null;
+
+  const already = (data.members || []).some(m => m.id === currentUser.id);
+  if (!already) {
+    data.members = [...(data.members || []), {
+      id: currentUser.id,
+      name: currentUser.name,
+      photo: currentUser.photo,
+      emoji: '🙂',
+      color: '#6c5ce7',
+      isTelegramUser: true
+    }];
+
+    if (db) {
+      const { doc, setDoc } = firestoreFns;
+      await setDoc(doc(db, 'families', docId), data);
+    } else {
+      localSave(docId, data);
+    }
+  }
+
+  session = { docId, code: code.toUpperCase(), name: data.name };
+  localStorage.setItem(LS_SESSION, JSON.stringify(session));
+  return session;
+}
+
+async function attachToFamily() {
+  if (!session) return;
+  setOnline(false);
+
+  if (db) {
+    const { doc, onSnapshot } = firestoreFns;
+    if (unsubscribe) unsubscribe();
+    unsubscribe = onSnapshot(doc(db, 'families', session.docId), snap => {
+      if (!snap.exists()) return;
+      applyingRemote = true;
+      state = { ...defaultState(), ...snap.data() };
+      $('familyName').textContent = state.name || 'Семья';
+      renderAll();
+      setOnline(true);
+      setTimeout(() => { applyingRemote = false; }, 400);
+    }, err => {
+      console.error('Snapshot error:', err);
+      setOnline(false);
+    });
+  } else {
+    state = { ...defaultState(), ...(localLoad(session.docId) || {}) };
+    $('familyName').textContent = state.name || 'Семья';
+    renderAll();
+    setOnline(true);
+  }
+}
+
+function save() {
+  if (!session) return;
+  if (applyingRemote) return;
+
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    if (db) {
+      const { doc, setDoc } = firestoreFns;
+      try {
+        await setDoc(doc(db, 'families', session.docId), state);
+        setOnline(true);
+      } catch (e) {
+        console.error('save failed', e);
+        setOnline(false);
+      }
+    } else {
+      localSave(session.docId, state);
+    }
+  }, 250);
+}
+
+function setOnline(on) {
+  $('familyChip').classList.toggle('offline', !on);
+}
+
+function leaveFamily() {
+  if (!confirm('Выйти из семьи на этом устройстве? Данные семьи останутся в облаке.')) return;
+  if (unsubscribe) unsubscribe();
+  localStorage.removeItem(LS_SESSION);
+  location.reload();
+}
+
+/* ============================================================
+   ОНБОРДИНГ
+   ============================================================ */
+function showOnbScreen(id) {
+  ['onb-choose', 'onb-create', 'onb-created', 'onb-join'].forEach(s => {
+    $(s).style.display = s === id ? '' : 'none';
+  });
+}
+
+$('goCreate').addEventListener('click', () => showOnbScreen('onb-create'));
+$('goJoin').addEventListener('click', () => showOnbScreen('onb-join'));
+$('backFromCreate').addEventListener('click', () => showOnbScreen('onb-choose'));
+$('backFromJoin').addEventListener('click', () => showOnbScreen('onb-choose'));
+
+$('doCreate').addEventListener('click', async () => {
+  const name = $('createName').value.trim() || 'Моя семья';
+  const pass = $('createPass').value.trim();
+  const err = $('createError');
+
+  if (pass.length < 4) {
+    err.textContent = 'Пароль должен быть не короче 4 символов';
+    err.classList.add('show');
+    return;
+  }
+  err.classList.remove('show');
+
+  try {
+    const s = await createFamily(name, pass);
+    $('newCode').textContent = s.code.split('').join(' ');
+    showOnbScreen('onb-created');
+  } catch (e) {
+    console.error(e);
+    err.textContent = 'Не удалось создать семью: ' + (e.message || 'ошибка');
+    err.classList.add('show');
+  }
+});
+
+$('copyCode').addEventListener('click', async () => {
+  const code = session?.code;
+  if (!code) return;
+  try {
+    await navigator.clipboard.writeText(code);
+    toast('Код скопирован');
+  } catch {
+    toast('Код: ' + code);
+  }
+});
+
+$('enterApp').addEventListener('click', async () => {
+  await enterMainApp();
+});
+
+$('doJoin').addEventListener('click', async () => {
+  const code = $('joinCode').value.trim().toUpperCase();
+  const pass = $('joinPass').value.trim();
+  const err = $('joinError');
+
+  if (code.length !== 6 || pass.length < 1) {
+    err.textContent = 'Введи код из 6 символов и пароль';
+    err.classList.add('show');
+    return;
+  }
+  err.classList.remove('show');
+
+  try {
+    const s = await joinFamily(code, pass);
+    if (!s) {
+      err.textContent = 'Семья не найдена или неверный пароль';
+      err.classList.add('show');
+      return;
+    }
+    await enterMainApp();
+  } catch (e) {
+    console.error(e);
+    err.textContent = 'Ошибка соединения: ' + (e.message || '');
+    err.classList.add('show');
+  }
+});
+
+$('joinCode').addEventListener('input', e => {
+  e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+});
+
+async function enterMainApp() {
+  $('onboarding').style.display = 'none';
+  $('app').style.display = '';
+  await attachToFamily();
+}
+
+$('leaveBtn').addEventListener('click', leaveFamily);
+$('copyFamilyCode').addEventListener('click', async () => {
+  if (!session?.code) return;
+  try {
+    await navigator.clipboard.writeText(session.code);
+    toast('Код семьи скопирован: ' + session.code);
+  } catch {
+    toast('Код: ' + session.code);
+  }
+});
+
+/* ============================================================
+   ОБЩИЕ КОНСТАНТЫ
+   ============================================================ */
+const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь',
+                'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const DOW = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const PRIO_LABEL = { high: 'Срочно', normal: 'Обычное', low: 'Не срочно' };
+const FAMILY_GRAD = 'linear-gradient(135deg,#6c5ce7,#a29bfe)';
+
 function memberById(id) { return state.members.find(m => m.id === id); }
 function isFamily(id) { return id === FAMILY; }
+function isMe(id) { return id === currentUser.id; }
 
 function fmtDate(isoStr) {
   const d = new Date(isoStr + 'T00:00:00');
   return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
 }
 
-/* ============================================================
-   УМНОЕ ПОЛЕ ВРЕМЕНИ
-   Пользователь может ввести "13" → получит "13:00"
-   "9" → "09:00", "1300" → "13:00", "13.5" → "13:05", "13:30" → "13:30"
-   ============================================================ */
+/* ---------- Умное поле времени ---------- */
 function formatTimeInput(raw) {
   const s = String(raw || '').trim();
   if (!s) return '';
-
-  // Приводим разделители к ':'
   let cleaned = s.replace(/[.\-–—]/g, ':');
-
   let h, m;
   if (cleaned.indexOf(':') === -1) {
-    // Только цифры
     const digits = cleaned.replace(/\D/g, '');
     if (!digits) return '';
-    if (digits.length <= 2) {
-      h = parseInt(digits, 10);
-      m = 0;
-    } else if (digits.length === 3) {
-      // "930" → 9:30
-      h = parseInt(digits.slice(0, 1), 10);
-      m = parseInt(digits.slice(1), 10);
+    if (digits.length <= 2) { h = parseInt(digits, 10); m = 0; }
+    else if (digits.length === 3) {
+      h = parseInt(digits.slice(0, 1), 10); m = parseInt(digits.slice(1), 10);
     } else {
-      // "1330" → 13:30
-      h = parseInt(digits.slice(0, 2), 10);
-      m = parseInt(digits.slice(2, 4) || '0', 10);
+      h = parseInt(digits.slice(0, 2), 10); m = parseInt(digits.slice(2, 4) || '0', 10);
     }
   } else {
     const parts = cleaned.split(':');
     h = parseInt((parts[0] || '').replace(/\D/g, '') || '0', 10);
     m = parseInt((parts[1] || '').replace(/\D/g, '') || '0', 10);
   }
-
   if (!isFinite(h) || isNaN(h)) h = 0;
   if (!isFinite(m) || isNaN(m)) m = 0;
   if (h < 0) h = 0; if (h > 23) h = 23;
   if (m < 0) m = 0; if (m > 59) m = 59;
-
   return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
 }
 
-/* Прикрепляет "умное" поведение к текстовому полю */
 function attachSmartTime(el) {
-  // Пока печатает — пропускаем только цифры и разделители
   el.addEventListener('input', () => {
     const v = el.value.replace(/[^\d:.\-–—]/g, '');
     if (v !== el.value) el.value = v;
   });
-
   const commit = () => {
-    const formatted = formatTimeInput(el.value);
-    el.value = formatted;
-    // После нормализации может измениться порядок — проверим
-    if (el === $('eventTime') || el === $('eventTimeEnd')) normalizeTimeRange();
+    el.value = formatTimeInput(el.value);
+    normalizeTimeRange();
   };
-
   el.addEventListener('blur', commit);
   el.addEventListener('change', commit);
   el.addEventListener('keydown', e => {
@@ -452,7 +911,6 @@ function attachSmartTime(el) {
   });
 }
 
-/* Если пользователь ввёл конец меньше начала — меняем местами */
 function normalizeTimeRange() {
   const s = $('eventTime').value;
   const e = $('eventTimeEnd').value;
@@ -462,7 +920,6 @@ function normalizeTimeRange() {
   }
 }
 
-/* Длительность в минутах */
 function durationMin(start, end) {
   if (!start || !end) return 0;
   const [sh, sm] = start.split(':').map(Number);
@@ -475,14 +932,11 @@ function fmtDuration(start, end) {
   if (mins <= 0) return '';
   const h = Math.floor(mins / 60), m = mins % 60;
   if (h && m) return `${h}ч ${m}м`;
-  if (h)      return `${h}ч`;
+  if (h) return `${h}ч`;
   return `${m}м`;
 }
 
 function eventSortKey(e) { return e.time || '99:99'; }
-
-const PRIO_LABEL = { high: 'Срочно', normal: 'Обычное', low: 'Не срочно' };
-const FAMILY_GRAD = 'linear-gradient(135deg,#6c5ce7,#a29bfe)';
 
 /* ============================================================
    ШАПКА / ТАБЫ
@@ -507,7 +961,7 @@ let taskFilter = 'all';
 
 function renderMemberSelects() {
   const opts = state.members
-    .map(m => `<option value="${m.id}">${esc(m.emoji)} ${esc(m.name)}</option>`)
+    .map(m => `<option value="${m.id}">${esc(m.emoji || '🙂')} ${esc(m.name)}</option>`)
     .join('');
   $('taskAssignee').innerHTML = opts;
   $('eventMember').innerHTML = opts;
@@ -518,7 +972,7 @@ function renderTaskFilters() {
   let html = `<button class="chip-btn ${taskFilter === 'all' ? 'active' : ''}" data-f="all">Все</button>`;
   state.members.forEach(m => {
     html += `<button class="chip-btn ${taskFilter === m.id ? 'active' : ''}" data-f="${m.id}">
-      ${esc(m.emoji)} ${esc(m.name)}</button>`;
+      ${esc(m.emoji || '🙂')} ${esc(m.name)}</button>`;
   });
   wrap.innerHTML = html;
 }
@@ -561,7 +1015,10 @@ function renderTasks() {
     const m = memberById(t.assigneeId);
     const overdue = t.due && !t.done && t.due < TODAY;
     const chips = [];
-    if (m) chips.push(`<span class="chip" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji)} ${esc(m.name)}</span>`);
+    if (m) {
+      const meClass = isMe(m.id) ? 'chip-me' : '';
+      chips.push(`<span class="chip ${meClass}" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji || '🙂')} ${esc(m.name)}${isMe(m.id) ? ' · это я' : ''}</span>`);
+    }
     if (t.due) chips.push(`<span class="chip ${overdue ? 'overdue' : ''}">📅 ${fmtDate(t.due)}${overdue ? ' · просрочено' : ''}</span>`);
     if (t.priority && t.priority !== 'normal') chips.push(`<span class="chip prio-${t.priority}">${PRIO_LABEL[t.priority]}</span>`);
 
@@ -614,10 +1071,6 @@ $('taskList').addEventListener('click', e => {
 /* ============================================================
    КАЛЕНДАРЬ
    ============================================================ */
-const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь',
-                'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-const DOW = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
-
 let calYear, calMonth, selectedDate;
 
 (function initCal() {
@@ -642,11 +1095,9 @@ $('todayBtn').addEventListener('click', () => {
   renderCalendar();
 });
 
-/* Прикрепляем "умное" поведение к обоим полям времени */
 attachSmartTime($('eventTime'));
 attachSmartTime($('eventTimeEnd'));
 
-/* Переключатель "Вся семья": прячет селект участника */
 $('eventWholeFamily').addEventListener('change', e => {
   $('eventMember').style.display = e.target.checked ? 'none' : '';
 });
@@ -719,18 +1170,18 @@ function renderDayEvents() {
     const bg = family ? FAMILY_GRAD : (m ? m.color : '#6c5ce7');
 
     const chips = [];
-    if (e.time && e.endTime) {
-      chips.push(`<span class="chip">🕐 ${esc(e.time)} – ${esc(e.endTime)}</span>`);
-    } else if (e.time) {
-      chips.push(`<span class="chip">🕐 с ${esc(e.time)}</span>`);
-    } else if (e.endTime) {
-      chips.push(`<span class="chip">🕐 до ${esc(e.endTime)}</span>`);
-    }
+    if (e.time && e.endTime) chips.push(`<span class="chip">🕐 ${esc(e.time)} – ${esc(e.endTime)}</span>`);
+    else if (e.time) chips.push(`<span class="chip">🕐 с ${esc(e.time)}</span>`);
+    else if (e.endTime) chips.push(`<span class="chip">🕐 до ${esc(e.endTime)}</span>`);
+
     const dur = fmtDuration(e.time, e.endTime);
     if (dur) chips.push(`<span class="chip chip-duration">⏱ ${dur}</span>`);
 
     if (family) chips.push(`<span class="chip chip-family">👨‍👩‍👧 Вся семья</span>`);
-    else if (m) chips.push(`<span class="chip" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji)} ${esc(m.name)}</span>`);
+    else if (m) {
+      const meClass = isMe(m.id) ? 'chip-me' : '';
+      chips.push(`<span class="chip ${meClass}" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji || '🙂')} ${esc(m.name)}${isMe(m.id) ? ' · это я' : ''}</span>`);
+    }
 
     return `<div class="item" data-id="${e.id}">
       <div style="width:6px;align-self:stretch;border-radius:6px;background:${bg};flex:0 0 auto"></div>
@@ -750,14 +1201,12 @@ function addEvent() {
   const title = $('eventTitle').value.trim();
   if (!title) { $('eventTitle').focus(); return; }
 
-  // Принудительно нормализуем поля времени перед сохранением
-  // (на случай, если пользователь не ушёл с поля, а сразу нажал "Добавить")
-  $('eventTime').value    = formatTimeInput($('eventTime').value);
+  $('eventTime').value = formatTimeInput($('eventTime').value);
   $('eventTimeEnd').value = formatTimeInput($('eventTimeEnd').value);
   normalizeTimeRange();
 
   const start = $('eventTime').value || '';
-  const end   = $('eventTimeEnd').value || '';
+  const end = $('eventTimeEnd').value || '';
   const family = $('eventWholeFamily').checked;
 
   state.events.push({
@@ -821,7 +1270,7 @@ function addShopItem() {
   const text = $('shopInput').value.trim();
   if (!text) { $('shopInput').focus(); return; }
   const existing = state.shopping.find(i => i.text.toLowerCase() === text.toLowerCase());
-  if (existing) { existing.done = false; }
+  if (existing) existing.done = false;
   else state.shopping.push({ id: uid(), text, done: false });
   $('shopInput').value = '';
   save();
@@ -860,22 +1309,34 @@ $('clearAllShopBtn').addEventListener('click', () => {
 function renderMembers() {
   const list = $('memberList');
   if (!state.members.length) {
-    list.innerHTML = `<div class="empty"><span class="big">👪</span>Добавьте членов семьи</div>`;
+    list.innerHTML = `<div class="empty"><span class="big">👪</span>Пока никого</div>`;
     return;
   }
 
   list.innerHTML = state.members.map(m => {
     const open = state.tasks.filter(t => t.assigneeId === m.id && !t.done).length;
     const done = state.tasks.filter(t => t.assigneeId === m.id && t.done).length;
+
+    const avatarInner = m.photo
+      ? `<img src="${esc(m.photo)}" alt="">`
+      : esc(m.emoji || '🙂');
+
+    const meBadge = isMe(m.id) ? ' <span style="color:#12a05c;font-size:11px">· это я</span>' : '';
+    const tgBadge = m.isTelegramUser ? ' <span style="color:#6c5ce7;font-size:11px">· TG</span>' : '';
+
     return `<div class="member" data-id="${m.id}">
-      <div class="avatar" style="background:${m.color}22">${esc(m.emoji)}</div>
+      <div class="avatar" style="background:${m.color}22">${avatarInner}</div>
       <div style="flex:1;min-width:0">
-        <div class="member-name">${esc(m.name)}</div>
+        <div class="member-name">${esc(m.name)}${meBadge}${tgBadge}</div>
         <div class="member-sub">${open} активных · ${done} выполнено</div>
       </div>
-      <button class="del" title="Удалить">✕</button>
+      ${isMe(m.id) ? '' : `<button class="del" title="Удалить">✕</button>`}
     </div>`;
   }).join('');
+
+  if (session) {
+    $('showFamilyCode').textContent = session.code;
+  }
 }
 
 $('addMemberBtn').addEventListener('click', addMember);
@@ -888,7 +1349,8 @@ function addMember() {
     id: uid(),
     name,
     emoji: $('memberEmoji').value.trim() || '🙂',
-    color: $('memberColor').value
+    color: $('memberColor').value,
+    isTelegramUser: false
   });
   $('memberName').value = '';
   $('memberEmoji').value = '';
@@ -900,22 +1362,13 @@ $('memberList').addEventListener('click', e => {
   const row = e.target.closest('.member');
   if (!row || !e.target.closest('.del')) return;
   const id = row.dataset.id;
+  if (isMe(id)) return;
   const m = memberById(id);
   if (!confirm(`Удалить «${m.name}»? Их задачи и события останутся, но без исполнителя.`)) return;
   state.members = state.members.filter(x => x.id !== id);
   state.tasks.forEach(t => { if (t.assigneeId === id) t.assigneeId = null; });
   state.events.forEach(ev => { if (ev.memberId === id) ev.memberId = null; });
   if (taskFilter === id) taskFilter = 'all';
-  save();
-  renderAll();
-});
-
-$('resetBtn').addEventListener('click', () => {
-  if (!confirm('Удалить ВСЕ данные и вернуть демо-состояние?')) return;
-  state = defaultState();
-  taskFilter = 'all';
-  selectedDate = TODAY;
-  const n = new Date(); calYear = n.getFullYear(); calMonth = n.getMonth();
   save();
   renderAll();
 });
@@ -931,7 +1384,31 @@ function renderAll() {
   renderMembers();
 }
 
-renderAll();
+/* ============================================================
+   СТАРТ
+   ============================================================ */
+(async () => {
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+    tg.setHeaderColor?.('#f2f4fa');
+    tg.setBackgroundColor?.('#f2f4fa');
+    tg.disableVerticalSwipes?.();
+  }
+
+  await initFirebase();
+
+  if (session) {
+    $('onboarding').style.display = 'none';
+    $('app').style.display = '';
+    await attachToFamily();
+  } else {
+    $('onboarding').style.display = '';
+    $('app').style.display = 'none';
+    showOnbScreen('onb-choose');
+  }
+})();
 </script>
 </body>
 </html>
