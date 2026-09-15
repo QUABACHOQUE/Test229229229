@@ -51,6 +51,7 @@
     display:block;text-align:left;font-size:13px;font-weight:700;
     color:var(--muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px;
   }
+  .onb-label .hint{text-transform:none;letter-spacing:0;font-weight:500;color:#b3bacb;font-size:12px}
   .onb-input{
     width:100%;font:inherit;font-size:16px;padding:14px 16px;border-radius:12px;
     border:1px solid var(--line);background:#f7f8fd;outline:none;transition:.15s;
@@ -223,6 +224,25 @@
   }
   .del:hover{background:#ffecec;color:var(--danger)}
 
+  /* ---------- Редактирование имени ---------- */
+  .edit-name-btn{
+    flex:0 0 auto;border:0;background:transparent;color:#c6ccdb;cursor:pointer;
+    font-size:15px;line-height:1;padding:6px 8px;border-radius:8px;transition:.15s;
+  }
+  .edit-name-btn:hover{background:var(--accent-soft);color:var(--accent)}
+  .name-edit-input{
+    font:inherit;font-size:15px;font-weight:600;
+    border:1px solid var(--accent);border-radius:8px;
+    padding:5px 10px;width:100%;max-width:230px;
+    background:#fff;outline:none;color:var(--text);
+    box-shadow:0 0 0 3px var(--accent-soft);
+    margin-bottom:2px;
+  }
+  .name-hint{
+    font-size:11px;color:var(--accent);font-weight:600;margin-top:4px;
+    display:inline-flex;align-items:center;gap:4px;
+  }
+
   .empty{text-align:center;padding:34px 16px;color:var(--muted);font-size:14px}
   .empty .big{font-size:34px;display:block;margin-bottom:8px;opacity:.55}
 
@@ -322,10 +342,13 @@
     <div class="onb-title">Новая семья</div>
     <div class="onb-sub">Придумай пароль и передай его близким вместе с кодом семьи.</div>
 
+    <label class="onb-label">Ваше имя</label>
+    <input type="text" class="onb-input" id="createYourName" placeholder="Например, Аня" maxlength="30" autocomplete="off">
+
     <label class="onb-label">Название семьи</label>
     <input type="text" class="onb-input" id="createName" placeholder="Ивановы" maxlength="30">
 
-    <label class="onb-label">Пароль (мин. 4 символа)</label>
+    <label class="onb-label">Пароль <span class="hint">(мин. 4 символа)</span></label>
     <input type="text" class="onb-input" id="createPass" placeholder="••••" maxlength="40" autocomplete="off">
 
     <div class="onb-error" id="createError"></div>
@@ -355,6 +378,9 @@
     <div class="onb-logo">🔑</div>
     <div class="onb-title">Присоединиться</div>
     <div class="onb-sub">Введи код семьи и пароль, которые тебе передал создатель.</div>
+
+    <label class="onb-label">Ваше имя</label>
+    <input type="text" class="onb-input" id="joinYourName" placeholder="Например, Аня" maxlength="30" autocomplete="off">
 
     <label class="onb-label">Код семьи</label>
     <input type="text" class="onb-input code" id="joinCode" placeholder="XXXXXX" maxlength="6" autocomplete="off" autocapitalize="characters">
@@ -498,7 +524,7 @@
 
 <script type="module">
 /* ============================================================
-   FIREBASE CONFIG — твой проект
+   FIREBASE CONFIG
    ============================================================ */
 const firebaseConfig = {
   apiKey: "AIzaSyCu797UMMMTpsT5ENjYj3KDIsxO5Zl4D-0",
@@ -515,6 +541,7 @@ const firebaseConfig = {
 const LS_SESSION = 'familyhub.session';
 const LS_DEVICE  = 'familyhub.deviceId';
 const LS_LOCAL   = 'familyhub.localState';
+const LS_MY_NAME = 'familyhub.myName';       // запоминаем имя пользователя между сессиями
 const uid = () => Math.random().toString(36).slice(2, 10);
 const $ = id => document.getElementById(id);
 const FAMILY = 'all';
@@ -550,6 +577,12 @@ function generateFamilyCode() {
   return code;
 }
 
+/* Сохранённое "моё имя" между сессиями */
+function getSavedMyName() { return localStorage.getItem(LS_MY_NAME) || ''; }
+function setSavedMyName(name) {
+  if (name && name.trim()) localStorage.setItem(LS_MY_NAME, name.trim());
+}
+
 function getCurrentUser() {
   const tg = window.Telegram?.WebApp;
   if (tg?.initDataUnsafe?.user) {
@@ -565,7 +598,13 @@ function getCurrentUser() {
     deviceId = 'device-' + uid();
     localStorage.setItem(LS_DEVICE, deviceId);
   }
-  return { id: deviceId, name: 'Устройство ' + deviceId.slice(-4), photo: null };
+  // Если раньше пользователь задавал имя — используем его
+  const savedName = getSavedMyName();
+  return {
+    id: deviceId,
+    name: savedName || ('Устройство ' + deviceId.slice(-4)),
+    photo: null
+  };
 }
 
 /* ============================================================
@@ -624,19 +663,21 @@ function localSave(docId, data) {
 /* ============================================================
    РАБОТА С СЕМЬЁЙ
    ============================================================ */
-async function createFamily(name, password) {
+async function createFamily(familyName, password, myName) {
   const code = generateFamilyCode();
   const docId = await sha256(code + ':' + password);
+  const displayName = (myName && myName.trim()) || currentUser.name;
+
   const initial = {
     ...defaultState(),
-    name: name || 'Моя семья',
+    name: familyName || 'Моя семья',
     members: [{
       id: currentUser.id,
-      name: currentUser.name,
+      name: displayName,
       photo: currentUser.photo,
       emoji: '🙂',
       color: '#6c5ce7',
-      isTelegramUser: true
+      isTelegramUser: !!currentUser.photo || currentUser.id.length > 12
     }],
     createdAt: Date.now()
   };
@@ -648,12 +689,13 @@ async function createFamily(name, password) {
     localSave(docId, initial);
   }
 
+  setSavedMyName(displayName);
   session = { docId, code, name: initial.name };
   localStorage.setItem(LS_SESSION, JSON.stringify(session));
   return session;
 }
 
-async function joinFamily(code, password) {
+async function joinFamily(code, password, myName) {
   const docId = await sha256(code.toUpperCase() + ':' + password);
   let data = null;
 
@@ -669,14 +711,16 @@ async function joinFamily(code, password) {
 
   const already = (data.members || []).some(m => m.id === currentUser.id);
   if (!already) {
+    const displayName = (myName && myName.trim()) || currentUser.name;
     data.members = [...(data.members || []), {
       id: currentUser.id,
-      name: currentUser.name,
+      name: displayName,
       photo: currentUser.photo,
       emoji: '🙂',
       color: '#6c5ce7',
-      isTelegramUser: true
+      isTelegramUser: !!currentUser.photo || currentUser.id.length > 12
     }];
+    setSavedMyName(displayName);
 
     if (db) {
       const { doc, setDoc } = firestoreFns;
@@ -759,16 +803,34 @@ function showOnbScreen(id) {
   });
 }
 
+/* Предзаполняем поле "Ваше имя" сохранённым именем */
+(function prefillNames() {
+  const saved = getSavedMyName();
+  if (saved) {
+    $('createYourName').value = saved;
+    $('joinYourName').value = saved;
+  } else if (currentUser.name && !currentUser.name.startsWith('Устройство ')) {
+    $('createYourName').value = currentUser.name;
+    $('joinYourName').value = currentUser.name;
+  }
+})();
+
 $('goCreate').addEventListener('click', () => showOnbScreen('onb-create'));
 $('goJoin').addEventListener('click', () => showOnbScreen('onb-join'));
 $('backFromCreate').addEventListener('click', () => showOnbScreen('onb-choose'));
 $('backFromJoin').addEventListener('click', () => showOnbScreen('onb-choose'));
 
 $('doCreate').addEventListener('click', async () => {
+  const yourName = $('createYourName').value.trim();
   const name = $('createName').value.trim() || 'Моя семья';
   const pass = $('createPass').value.trim();
   const err = $('createError');
 
+  if (!yourName) {
+    err.textContent = 'Введите ваше имя';
+    err.classList.add('show');
+    return;
+  }
   if (pass.length < 4) {
     err.textContent = 'Пароль должен быть не короче 4 символов';
     err.classList.add('show');
@@ -777,7 +839,7 @@ $('doCreate').addEventListener('click', async () => {
   err.classList.remove('show');
 
   try {
-    const s = await createFamily(name, pass);
+    const s = await createFamily(name, pass, yourName);
     $('newCode').textContent = s.code.split('').join(' ');
     showOnbScreen('onb-created');
   } catch (e) {
@@ -803,10 +865,16 @@ $('enterApp').addEventListener('click', async () => {
 });
 
 $('doJoin').addEventListener('click', async () => {
+  const yourName = $('joinYourName').value.trim();
   const code = $('joinCode').value.trim().toUpperCase();
   const pass = $('joinPass').value.trim();
   const err = $('joinError');
 
+  if (!yourName) {
+    err.textContent = 'Введите ваше имя';
+    err.classList.add('show');
+    return;
+  }
   if (code.length !== 6 || pass.length < 1) {
     err.textContent = 'Введи код из 6 символов и пароль';
     err.classList.add('show');
@@ -815,7 +883,7 @@ $('doJoin').addEventListener('click', async () => {
   err.classList.remove('show');
 
   try {
-    const s = await joinFamily(code, pass);
+    const s = await joinFamily(code, pass, yourName);
     if (!s) {
       err.textContent = 'Семья не найдена или неверный пароль';
       err.classList.add('show');
@@ -1316,27 +1384,84 @@ function renderMembers() {
   list.innerHTML = state.members.map(m => {
     const open = state.tasks.filter(t => t.assigneeId === m.id && !t.done).length;
     const done = state.tasks.filter(t => t.assigneeId === m.id && t.done).length;
+    const me = isMe(m.id);
 
     const avatarInner = m.photo
       ? `<img src="${esc(m.photo)}" alt="">`
       : esc(m.emoji || '🙂');
 
-    const meBadge = isMe(m.id) ? ' <span style="color:#12a05c;font-size:11px">· это я</span>' : '';
+    const meBadge = me ? ' <span style="color:#12a05c;font-size:11px">· вы</span>' : '';
     const tgBadge = m.isTelegramUser ? ' <span style="color:#6c5ce7;font-size:11px">· TG</span>' : '';
+
+    // Подсказка если имя дефолтное (только для себя)
+    const needNameHint = me && /^Устройство /.test(m.name);
+
+    const actionBtn = me
+      ? `<button class="edit-name-btn" title="Изменить имя">✏️</button>`
+      : `<button class="del" title="Удалить">✕</button>`;
 
     return `<div class="member" data-id="${m.id}">
       <div class="avatar" style="background:${m.color}22">${avatarInner}</div>
       <div style="flex:1;min-width:0">
         <div class="member-name">${esc(m.name)}${meBadge}${tgBadge}</div>
         <div class="member-sub">${open} активных · ${done} выполнено</div>
+        ${needNameHint ? `<div class="name-hint">✏️ Нажмите, чтобы задать имя</div>` : ''}
       </div>
-      ${isMe(m.id) ? '' : `<button class="del" title="Удалить">✕</button>`}
+      ${actionBtn}
     </div>`;
   }).join('');
 
   if (session) {
     $('showFamilyCode').textContent = session.code;
   }
+}
+
+/* ---------- Inline-редактирование своего имени ---------- */
+function startEditMyName(memberEl) {
+  const me = state.members.find(m => m.id === currentUser.id);
+  if (!me) return;
+
+  const nameDiv = memberEl.querySelector('.member-name');
+  if (!nameDiv) return;
+  const oldName = me.name;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = oldName;
+  input.className = 'name-edit-input';
+  input.maxLength = 30;
+  input.autocomplete = 'off';
+
+  nameDiv.replaceWith(input);
+  input.focus();
+  input.select();
+
+  let finished = false;
+
+  const commit = () => {
+    if (finished) return;
+    finished = true;
+    const newName = input.value.trim();
+    if (newName && newName !== oldName) {
+      me.name = newName;
+      setSavedMyName(newName);
+      save();
+      toast('Имя сохранено: ' + newName);
+    }
+    renderMembers();
+  };
+
+  const cancel = () => {
+    if (finished) return;
+    finished = true;
+    renderMembers();
+  };
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+  });
+  input.addEventListener('blur', commit);
 }
 
 $('addMemberBtn').addEventListener('click', addMember);
@@ -1360,10 +1485,20 @@ function addMember() {
 
 $('memberList').addEventListener('click', e => {
   const row = e.target.closest('.member');
-  if (!row || !e.target.closest('.del')) return;
+  if (!row) return;
+
+  // Клик по карандашу → редактирование своего имени
+  if (e.target.closest('.edit-name-btn')) {
+    startEditMyName(row);
+    return;
+  }
+
+  // Клик по крестику → удаление члена семьи (нельзя удалить себя)
+  if (!e.target.closest('.del')) return;
   const id = row.dataset.id;
   if (isMe(id)) return;
   const m = memberById(id);
+  if (!m) return;
   if (!confirm(`Удалить «${m.name}»? Их задачи и события останутся, но без исполнителя.`)) return;
   state.members = state.members.filter(x => x.id !== id);
   state.tasks.forEach(t => { if (t.assigneeId === id) t.assigneeId = null; });
