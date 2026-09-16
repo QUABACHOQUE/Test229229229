@@ -180,7 +180,6 @@
   .add-form .sm{flex:0 1 150px}
   .add-form .xs{flex:0 0 130px}
 
-  /* Кнопка раскрытия формы (универсальная для задач и событий) */
   .add-open{
     display:flex;align-items:center;justify-content:center;gap:8px;
     width:100%;padding:12px;margin-top:6px;
@@ -798,13 +797,11 @@
   </nav>
 
   <section class="panel active" id="panel-tasks">
-    <!-- Кнопка раскрытия формы -->
     <button type="button" class="add-open" id="addTaskOpenBtn">
       <span class="plus">+</span>
       <span>Добавить задачу</span>
     </button>
 
-    <!-- Форма -->
     <div class="add-form-wrap" id="addTaskFormWrap" style="display:none">
       <div class="add-form">
         <input type="text" id="taskTitle" class="grow" placeholder="Что нужно сделать?">
@@ -948,6 +945,29 @@ const LS_MY_NAME  = 'familyhub.myName';
 const LS_MY_EMOJI = 'familyhub.myEmoji';
 const uid = () => Math.random().toString(36).slice(2, 10);
 const $ = id => document.getElementById(id);
+
+/* ============================================================
+   HAPTIC FEEDBACK (Telegram Mini Apps)
+   Минимальный набор: только ключевые действия.
+   ============================================================ */
+function tgHaptic() {
+  return window.Telegram?.WebApp?.HapticFeedback || null;
+}
+/* Лёгкий тап — для чекбоксов выполнено/куплено */
+function hapticTap() {
+  const h = tgHaptic();
+  if (h) { try { h.impactOccurred('light'); } catch(_) {} }
+}
+/* Подтверждение — после успешного добавления */
+function hapticSuccess() {
+  const h = tgHaptic();
+  if (h) { try { h.notificationOccurred('success'); } catch(_) {} }
+}
+/* Удаление — чуть ощутимее обычного тапа */
+function hapticDelete() {
+  const h = tgHaptic();
+  if (h) { try { h.impactOccurred('medium'); } catch(_) {} }
+}
 
 function iso(d) {
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -1627,7 +1647,7 @@ $('regularToggleBtn').addEventListener('click', () => {
 });
 
 /* ============================================================
-   ФОРМА ЗАДАЧИ — открытие/закрытие
+   ФОРМА ЗАДАЧИ
    ============================================================ */
 function openTaskForm() {
   $('addTaskOpenBtn').style.display = 'none';
@@ -1650,7 +1670,7 @@ $('addTaskOpenBtn').addEventListener('click', openTaskForm);
 $('addTaskCancelBtn').addEventListener('click', closeTaskForm);
 
 /* ============================================================
-   ФОРМА СОБЫТИЯ — открытие/закрытие
+   ФОРМА СОБЫТИЯ
    ============================================================ */
 function openAddEventForm() {
   $('addEventOpenBtn').style.display = 'none';
@@ -1881,6 +1901,7 @@ function addTask() {
   save();
   closeTaskForm();
   renderTasks();
+  hapticSuccess();
   toast('Задача добавлена');
 }
 $('taskList').addEventListener('click', e => {
@@ -1888,10 +1909,17 @@ $('taskList').addEventListener('click', e => {
   if (!row) return;
   const t = state.tasks.find(x => x.id === row.dataset.id);
   if (!t) return;
-  if (e.target.closest('.check')) { t.done = !t.done; save(); renderTasks(); }
+  if (e.target.closest('.check')) {
+    t.done = !t.done;
+    hapticTap();
+    save();
+    renderTasks();
+  }
   if (e.target.closest('.del')) {
+    hapticDelete();
     state.tasks = state.tasks.filter(x => x.id !== t.id);
-    save(); renderTasks();
+    save();
+    renderTasks();
   }
 });
 
@@ -2161,6 +2189,7 @@ function attachEventEditHandlers() {
     activeEventId = null;
     save();
     renderCalendar();
+    hapticSuccess();
     toast('Событие обновлено');
   };
 
@@ -2201,6 +2230,7 @@ $('eventList').addEventListener('click', e => {
 
   if (e.target.closest('[data-action="del"]')) {
     e.stopPropagation();
+    hapticDelete();
     state.events = state.events.filter(x => x.id !== id);
     if (editingEventId === id) editingEventId = null;
     if (activeEventId === id) activeEventId = null;
@@ -2277,6 +2307,7 @@ function addEvent() {
   save();
   closeAddEventForm();
   renderCalendar();
+  hapticSuccess();
 }
 
 /* ============================================================
@@ -2313,6 +2344,7 @@ function addShopItem() {
   $('shopInput').value = '';
   save();
   renderShopping();
+  hapticSuccess();
   $('shopInput').focus();
 }
 $('shopList').addEventListener('click', e => {
@@ -2320,10 +2352,17 @@ $('shopList').addEventListener('click', e => {
   if (!row) return;
   const item = state.shopping.find(x => x.id === row.dataset.id);
   if (!item) return;
-  if (e.target.closest('.check')) { item.done = !item.done; save(); renderShopping(); }
+  if (e.target.closest('.check')) {
+    item.done = !item.done;
+    hapticTap();
+    save();
+    renderShopping();
+  }
   if (e.target.closest('.del')) {
+    hapticDelete();
     state.shopping = state.shopping.filter(x => x.id !== item.id);
-    save(); renderShopping();
+    save();
+    renderShopping();
   }
 });
 $('clearBoughtBtn').addEventListener('click', () => {
@@ -2333,6 +2372,7 @@ $('clearBoughtBtn').addEventListener('click', () => {
 $('clearAllShopBtn').addEventListener('click', () => {
   if (!state.shopping.length) return;
   if (confirm('Очистить весь список покупок?')) {
+    hapticDelete();
     state.shopping = [];
     save(); renderShopping();
   }
@@ -2454,6 +2494,7 @@ function addMember() {
   $('memberName').value = '';
   save();
   renderAll();
+  hapticSuccess();
 }
 
 $('memberList').addEventListener('click', e => {
@@ -2466,6 +2507,7 @@ $('memberList').addEventListener('click', e => {
   const m = memberById(id);
   if (!m) return;
   if (!confirm(`Удалить «${m.name}»? Их задачи и события останутся, но без исполнителя.`)) return;
+  hapticDelete();
   state.members = state.members.filter(x => x.id !== id);
   state.tasks.forEach(t => { if (t.assigneeId === id) t.assigneeId = null; });
   state.events.forEach(ev => {
