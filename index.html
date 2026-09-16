@@ -306,7 +306,6 @@
   }
   .edit-event-btn:hover{background:var(--accent-soft);color:var(--accent)}
 
-  /* Кнопки действий появляются только когда карточка активна */
   .event-actions{
     display:none;
     gap:2px;flex:0 0 auto;align-items:flex-start;
@@ -316,9 +315,6 @@
     animation:fade .15s ease;
   }
 
-  /* ============================================================
-     ФОРМА РЕДАКТИРОВАНИЯ СОБЫТИЯ
-     ============================================================ */
   .event-edit-card{
     background:#fff;border-radius:14px;
     padding:14px;
@@ -401,7 +397,6 @@
   .chip-btn:hover{border-color:#cfd5e8}
   .chip-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
-  /* КАЛЕНДАРЬ */
   .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
   .cal-title{font-size:17px;font-weight:700;text-transform:capitalize}
   .cal-nav{display:flex;gap:6px}
@@ -1810,6 +1805,8 @@ function attachEventEditHandlers() {
 
 /* ============================================================
    КЛИКИ ПО СПИСКУ СОБЫТИЙ
+   ВАЖНО: stopPropagation, чтобы клик не долетал до document
+   и не сбрасывал activeEventId сразу после установки.
    ============================================================ */
 $('eventList').addEventListener('click', e => {
   if (e.target.closest('.event-edit-card')) return;
@@ -1821,6 +1818,7 @@ $('eventList').addEventListener('click', e => {
 
   /* Крестик — удалить */
   if (e.target.closest('[data-action="del"]')) {
+    e.stopPropagation();
     state.events = state.events.filter(x => x.id !== id);
     if (editingEventId === id) editingEventId = null;
     if (activeEventId === id) activeEventId = null;
@@ -1831,13 +1829,15 @@ $('eventList').addEventListener('click', e => {
 
   /* Карандаш — открыть форму редактирования */
   if (e.target.closest('[data-action="edit"]')) {
+    e.stopPropagation();
     editingEventId = id;
     activeEventId = null;
     renderDayEvents();
     return;
   }
 
-  /* Клик по телу карточки — переключить активность (показать/скрыть действия) */
+  /* Клик по телу карточки — переключить активность */
+  e.stopPropagation();
   if (activeEventId === id) {
     activeEventId = null;
   } else {
