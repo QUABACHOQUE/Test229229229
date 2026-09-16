@@ -81,19 +81,14 @@
   }
   .code-hint{font-size:13px;color:var(--muted);line-height:1.5;margin-top:8px}
 
-  /* ---------- Экран "Семья" ---------- */
   .family-screen{
     position:fixed;inset:0;background:var(--bg);z-index:90;
     overflow-y:auto;
     animation:fadeScreen .22s ease;
   }
   @keyframes fadeScreen{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-  .family-screen-inner{
-    max-width:940px;margin:0 auto;padding:20px 16px 60px;
-  }
-  .family-screen-topbar{
-    display:flex;align-items:center;gap:12px;margin-bottom:16px;
-  }
+  .family-screen-inner{max-width:940px;margin:0 auto;padding:20px 16px 60px}
+  .family-screen-topbar{display:flex;align-items:center;gap:12px;margin-bottom:16px}
   .family-back-btn{
     display:inline-flex;align-items:center;gap:8px;
     border:0;background:#fff;color:var(--text);cursor:pointer;
@@ -103,14 +98,8 @@
   .family-back-btn:hover{background:#f7f8fd;transform:translateX(-2px)}
   .family-back-btn .arrow{color:var(--accent);font-size:16px}
 
-  /* ---------- Emoji picker ---------- */
-  .emoji-picker{
-    display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
-    margin:0 auto;
-  }
-  .emoji-picker.small{
-    gap:6px;justify-content:flex-start;margin:10px 0 0;
-  }
+  .emoji-picker{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:0 auto}
+  .emoji-picker.small{gap:6px;justify-content:flex-start;margin:10px 0 0}
   .emoji-btn{
     width:48px;height:48px;border-radius:12px;border:1.5px solid var(--line);
     background:#f7f8fd;font-size:24px;line-height:1;cursor:pointer;
@@ -120,8 +109,7 @@
   .emoji-btn:hover{border-color:#cfd5e8;background:#f0f2f9}
   .emoji-btn.active{
     border-color:var(--accent);background:var(--accent-soft);
-    box-shadow:0 0 0 3px var(--accent-soft);
-    transform:scale(1.05);
+    box-shadow:0 0 0 3px var(--accent-soft);transform:scale(1.05);
   }
   .emoji-picker.small .emoji-btn{width:40px;height:40px;font-size:20px;border-radius:10px}
 
@@ -135,8 +123,7 @@
     display:inline-flex;align-items:center;gap:8px;background:#fff;
     padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;
     box-shadow:var(--shadow);color:var(--text);
-    border:0;cursor:pointer;font-family:inherit;
-    transition:.15s;
+    border:0;cursor:pointer;font-family:inherit;transition:.15s;
   }
   .family-chip:hover{box-shadow:0 4px 14px rgba(30,40,80,.12);transform:translateY(-1px)}
   .family-chip:active{transform:translateY(0)}
@@ -262,9 +249,7 @@
   .chip.prio-high{background:#ffecec;color:#e5484d}
   .chip.prio-normal{background:#eef4ff;color:#2f6fed}
   .chip.prio-low{background:#eefaf3;color:#12a05c}
-  .chip.chip-family{
-    background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;
-  }
+  .chip.chip-family{background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff}
   .chip.chip-duration{background:#fff4e6;color:#c47f17}
   .chip.chip-me{background:#eefaf3;color:#12a05c}
   .del{
@@ -312,6 +297,9 @@
   .chip-btn:hover{border-color:#cfd5e8}
   .chip-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
+  /* ============================================================
+     КАЛЕНДАРЬ С МИНИ-ГАНТОМ
+     ============================================================ */
   .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
   .cal-title{font-size:17px;font-weight:700;text-transform:capitalize}
   .cal-nav{display:flex;gap:6px}
@@ -321,29 +309,106 @@
     display:flex;align-items:center;justify-content:center;transition:.15s;
   }
   .icon-btn:hover{background:#f7f8fd;color:var(--text)}
-  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-  .dow{text-align:center;font-size:11px;font-weight:700;color:var(--muted);
-       padding:4px 0;text-transform:uppercase;letter-spacing:.5px}
+
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .dow{
+    text-align:center;font-size:11px;font-weight:700;color:var(--muted);
+    padding:4px 0;text-transform:uppercase;letter-spacing:.5px;
+  }
+
+  /* Клетка дня — контейнер с мини-гантом */
   .day{
-    min-height:68px;border-radius:11px;background:#f8f9fd;border:1px solid transparent;
-    padding:5px 6px;cursor:pointer;display:flex;flex-direction:column;gap:3px;
-    transition:.13s;overflow:hidden;
+    min-height:86px;
+    border-radius:10px;
+    background:#f8f9fd;
+    border:1px solid transparent;
+    padding:4px 5px 5px;
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    transition:.13s;
+    overflow:hidden;
   }
   .day:hover{background:#f1f3fb}
   .day.blank{background:transparent;cursor:default;border:0}
   .day.today{border-color:var(--accent);background:var(--accent-soft)}
   .day.selected{box-shadow:0 0 0 2px var(--accent);background:#fff}
-  .day .num{font-size:12px;font-weight:700;color:#525a70}
-  .day.today .num{color:var(--accent)}
-  .ev{
-    font-size:10px;font-weight:600;color:#fff;border-radius:5px;
-    padding:2px 5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+
+  .day-head{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:4px;
+    line-height:1;
+    flex:0 0 auto;
   }
-  .ev-more{font-size:10px;color:var(--muted);font-weight:600;padding-left:2px}
+  .day .num{
+    font-size:12px;font-weight:700;color:#525a70;
+  }
+  .day.today .num{color:var(--accent)}
+  .day-allday{
+    width:5px;height:5px;border-radius:50%;
+    background:#8b93a8;opacity:.6;flex:0 0 auto;
+  }
+
+  /* Мини-гант внутри клетки */
+  .day-gantt{
+    flex:1 1 auto;
+    display:flex;
+    flex-direction:column;
+    gap:1px;
+    position:relative;
+    min-height:20px;
+  }
+  /* Оси 6, 12, 18 часов — тонкие вертикальные линии */
+  .day-gantt::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background-image:
+      linear-gradient(90deg, transparent 24.5%, rgba(30,35,48,.05) 24.5%, rgba(30,35,48,.05) 25.5%, transparent 25.5%),
+      linear-gradient(90deg, transparent 49.5%, rgba(30,35,48,.05) 49.5%, rgba(30,35,48,.05) 50.5%, transparent 50.5%),
+      linear-gradient(90deg, transparent 74.5%, rgba(30,35,48,.05) 74.5%, rgba(30,35,48,.05) 75.5%, transparent 75.5%);
+    z-index:0;
+  }
+
+  .gantt-row{
+    position:relative;
+    height:5px;
+    border-radius:2px;
+    background:rgba(30,35,48,.045);
+    overflow:hidden;
+    z-index:1;
+  }
+  .gantt-row-family{
+    background:transparent;
+    height:3px;
+    overflow:visible;
+  }
+  .gantt-row-family .gantt-event{
+    top:0;bottom:0;
+    border-radius:2px;
+    background:linear-gradient(135deg,#6c5ce7,#a29bfe);
+  }
+
+  .gantt-event{
+    position:absolute;
+    top:0;
+    bottom:0;
+    min-width:2px;
+    border-radius:2px;
+  }
+  .gantt-event-allday{
+    left:0;right:0;width:auto!important;
+    opacity:.28;
+  }
+
   @media(max-width:560px){
-    .day{min-height:52px;padding:4px}
-    .ev{display:none}
+    .day{min-height:72px;padding:3px 4px 4px}
     .day .num{font-size:13px}
+    .gantt-row{height:4px}
+    .gantt-row-family{height:2.5px}
+    .day-gantt{gap:1px}
   }
 
   .progress-wrap{margin-bottom:14px}
@@ -385,7 +450,6 @@
 </head>
 <body>
 
-<!-- ================= ОНБОРДИНГ ================= -->
 <div class="onboarding" id="onboarding">
   <div class="onb-card" id="onb-choose">
     <div class="onb-logo">🏡</div>
@@ -458,7 +522,6 @@
   </div>
 </div>
 
-<!-- ================= ЭКРАН "СЕМЬЯ" ================= -->
 <div class="family-screen" id="familyScreen" style="display:none">
   <div class="family-screen-inner">
     <div class="family-screen-topbar">
@@ -496,7 +559,6 @@
   </div>
 </div>
 
-<!-- ================= ОСНОВНОЕ ПРИЛОЖЕНИЕ ================= -->
 <div class="app" id="app" style="display:none">
 
   <div class="topbar">
@@ -597,9 +659,6 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
-/* ============================================================
-   FIREBASE CONFIG
-   ============================================================ */
 const firebaseConfig = {
   apiKey: "AIzaSyCu797UMMMTpsT5ENjYj3KDIsxO5Zl4D-0",
   authDomain: "familyhub-747bc.firebaseapp.com",
@@ -609,9 +668,6 @@ const firebaseConfig = {
   appId: "1:1016586691620:web:3562f2afc1ab690b31e4b1"
 };
 
-/* ============================================================
-   НАБОР АВАТАРОК
-   ============================================================ */
 const AVATAR_EMOJIS = [
   { emoji: '🧑', label: 'Человек' },
   { emoji: '👩', label: 'Девушка' },
@@ -621,9 +677,12 @@ const AVATAR_EMOJIS = [
 ];
 const DEFAULT_EMOJI = AVATAR_EMOJIS[0].emoji;
 
-/* ============================================================
-   ОБЩИЕ УТИЛИТЫ
-   ============================================================ */
+/* Палитра для авто-цвета новых участников (чтобы в ганте полоски различались) */
+const MEMBER_PALETTE = [
+  '#e84393', '#0984e3', '#00b894', '#f39c12',
+  '#6c5ce7', '#e17055', '#00cec9', '#a29bfe'
+];
+
 const LS_SESSION  = 'familyhub.session';
 const LS_DEVICE   = 'familyhub.deviceId';
 const LS_LOCAL    = 'familyhub.localState';
@@ -642,7 +701,6 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, c =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
-
 function toast(msg) {
   const t = $('toast');
   t.textContent = msg;
@@ -650,28 +708,22 @@ function toast(msg) {
   clearTimeout(toast._t);
   toast._t = setTimeout(() => t.classList.remove('show'), 2000);
 }
-
 async function sha256(str) {
   const buf = new TextEncoder().encode(str);
   const hash = await crypto.subtle.digest('SHA-256', buf);
   return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
-
 function generateFamilyCode() {
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   let code = '';
   for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
   return code;
 }
-
 function getSavedMyName()  { return localStorage.getItem(LS_MY_NAME) || ''; }
 function setSavedMyName(n) { if (n && n.trim()) localStorage.setItem(LS_MY_NAME, n.trim()); }
 function getSavedMyEmoji() { return localStorage.getItem(LS_MY_EMOJI) || ''; }
 function setSavedMyEmoji(e) { if (e) localStorage.setItem(LS_MY_EMOJI, e); }
 
-/* ============================================================
-   EMOJI PICKER
-   ============================================================ */
 function buildEmojiPicker(container, selected) {
   if (!container) return;
   const initial = selected || DEFAULT_EMOJI;
@@ -682,7 +734,6 @@ function buildEmojiPicker(container, selected) {
       ${item.emoji}
     </button>
   `).join('');
-
   container.querySelectorAll('.emoji-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       container.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('active'));
@@ -691,14 +742,10 @@ function buildEmojiPicker(container, selected) {
     });
   });
 }
-
 function getEmojiFromPicker(container) {
   return (container && container.dataset.selected) || DEFAULT_EMOJI;
 }
 
-/* ============================================================
-   ТЕКУЩИЙ ПОЛЬЗОВАТЕЛЬ
-   ============================================================ */
 function getCurrentUser() {
   const tg = window.Telegram?.WebApp;
   if (tg?.initDataUnsafe?.user) {
@@ -723,16 +770,11 @@ function getCurrentUser() {
     emoji: getSavedMyEmoji() || DEFAULT_EMOJI
   };
 }
-
-/* ============================================================
-   СОСТОЯНИЕ
-   ============================================================ */
 const currentUser = getCurrentUser();
 
 function defaultState() {
   return { name: 'Моя семья', members: [], tasks: [], events: [], shopping: [] };
 }
-
 let state = defaultState();
 let session = null;
 let db = null;
@@ -745,9 +787,6 @@ try {
   session = JSON.parse(localStorage.getItem(LS_SESSION) || 'null');
 } catch (e) { session = null; }
 
-/* ============================================================
-   FIREBASE INIT
-   ============================================================ */
 async function initFirebase() {
   try {
     const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
@@ -763,50 +802,41 @@ async function initFirebase() {
     return false;
   }
 }
-
-/* ============================================================
-   ЛОКАЛЬНЫЙ РЕЖИМ
-   ============================================================ */
 function localLoad(docId) {
-  try {
-    const raw = localStorage.getItem(LS_LOCAL + ':' + docId);
-    return raw ? JSON.parse(raw) : null;
-  } catch (e) { return null; }
+  try { const raw = localStorage.getItem(LS_LOCAL + ':' + docId); return raw ? JSON.parse(raw) : null; }
+  catch (e) { return null; }
 }
 function localSave(docId, data) {
   localStorage.setItem(LS_LOCAL + ':' + docId, JSON.stringify(data));
 }
 
-/* ============================================================
-   РАБОТА С СЕМЬЁЙ
-   ============================================================ */
+function pickMemberColor() {
+  // Следующий цвет из палитры, начиная с того, сколько уже участников
+  return MEMBER_PALETTE[state.members.length % MEMBER_PALETTE.length];
+}
+
 async function createFamily(familyName, password, myName, myEmoji) {
   const code = generateFamilyCode();
   const docId = await sha256(code + ':' + password);
   const displayName = (myName && myName.trim()) || currentUser.name;
   const emoji = myEmoji || DEFAULT_EMOJI;
+  const color = MEMBER_PALETTE[0];
 
   const initial = {
     ...defaultState(),
     name: familyName || 'Моя семья',
     members: [{
-      id: currentUser.id,
-      name: displayName,
-      photo: currentUser.photo,
-      emoji,
-      color: '#6c5ce7',
+      id: currentUser.id, name: displayName, photo: currentUser.photo, emoji, color,
       isTelegramUser: !!currentUser.photo || currentUser.id.length > 12
     }],
     createdAt: Date.now()
   };
-
   if (db) {
     const { doc, setDoc } = firestoreFns;
     await setDoc(doc(db, 'families', docId), initial);
   } else {
     localSave(docId, initial);
   }
-
   setSavedMyName(displayName);
   setSavedMyEmoji(emoji);
   session = { docId, code, name: initial.name };
@@ -817,7 +847,6 @@ async function createFamily(familyName, password, myName, myEmoji) {
 async function joinFamily(code, password, myName, myEmoji) {
   const docId = await sha256(code.toUpperCase() + ':' + password);
   let data = null;
-
   if (db) {
     const { doc, getDoc } = firestoreFns;
     const snap = await getDoc(doc(db, 'families', docId));
@@ -825,24 +854,19 @@ async function joinFamily(code, password, myName, myEmoji) {
   } else {
     data = localLoad(docId);
   }
-
   if (!data) return null;
 
   const already = (data.members || []).some(m => m.id === currentUser.id);
   if (!already) {
     const displayName = (myName && myName.trim()) || currentUser.name;
     const emoji = myEmoji || DEFAULT_EMOJI;
+    const color = MEMBER_PALETTE[(data.members || []).length % MEMBER_PALETTE.length];
     data.members = [...(data.members || []), {
-      id: currentUser.id,
-      name: displayName,
-      photo: currentUser.photo,
-      emoji,
-      color: '#6c5ce7',
+      id: currentUser.id, name: displayName, photo: currentUser.photo, emoji, color,
       isTelegramUser: !!currentUser.photo || currentUser.id.length > 12
     }];
     setSavedMyName(displayName);
     setSavedMyEmoji(emoji);
-
     if (db) {
       const { doc, setDoc } = firestoreFns;
       await setDoc(doc(db, 'families', docId), data);
@@ -850,7 +874,6 @@ async function joinFamily(code, password, myName, myEmoji) {
       localSave(docId, data);
     }
   }
-
   session = { docId, code: code.toUpperCase(), name: data.name };
   localStorage.setItem(LS_SESSION, JSON.stringify(session));
   return session;
@@ -859,7 +882,6 @@ async function joinFamily(code, password, myName, myEmoji) {
 async function attachToFamily() {
   if (!session) return;
   setOnline(false);
-
   if (db) {
     const { doc, onSnapshot } = firestoreFns;
     if (unsubscribe) unsubscribe();
@@ -886,7 +908,6 @@ async function attachToFamily() {
 function save() {
   if (!session) return;
   if (applyingRemote) return;
-
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
     if (db) {
@@ -903,11 +924,9 @@ function save() {
     }
   }, 250);
 }
-
 function setOnline(on) {
   $('familyChip').classList.toggle('offline', !on);
 }
-
 function leaveFamily() {
   if (!confirm('Выйти из семьи на этом устройстве? Данные семьи останутся в облаке.')) return;
   if (unsubscribe) unsubscribe();
@@ -915,39 +934,28 @@ function leaveFamily() {
   location.reload();
 }
 
-/* ============================================================
-   ЭКРАН "СЕМЬЯ" — открытие/закрытие
-   ============================================================ */
 function openFamilyScreen() {
   $('familyScreen').style.display = 'block';
   document.body.style.overflow = 'hidden';
   renderMembers();
 }
-
 function closeFamilyScreen() {
   $('familyScreen').style.display = 'none';
   document.body.style.overflow = '';
 }
-
 $('familyChip').addEventListener('click', openFamilyScreen);
 $('closeFamilyScreen').addEventListener('click', closeFamilyScreen);
-
-/* Escape закрывает экран */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && $('familyScreen').style.display !== 'none') {
     closeFamilyScreen();
   }
 });
 
-/* ============================================================
-   ОНБОРДИНГ
-   ============================================================ */
 function showOnbScreen(id) {
   ['onb-choose', 'onb-create', 'onb-created', 'onb-join'].forEach(s => {
     $(s).style.display = s === id ? '' : 'none';
   });
 }
-
 buildEmojiPicker($('createEmojiPicker'), getSavedMyEmoji());
 buildEmojiPicker($('joinEmojiPicker'), getSavedMyEmoji());
 
@@ -973,19 +981,9 @@ $('doCreate').addEventListener('click', async () => {
   const name = $('createName').value.trim() || 'Моя семья';
   const pass = $('createPass').value.trim();
   const err = $('createError');
-
-  if (!yourName) {
-    err.textContent = 'Введите ваше имя';
-    err.classList.add('show');
-    return;
-  }
-  if (pass.length < 4) {
-    err.textContent = 'Пароль должен быть не короче 4 символов';
-    err.classList.add('show');
-    return;
-  }
+  if (!yourName) { err.textContent = 'Введите ваше имя'; err.classList.add('show'); return; }
+  if (pass.length < 4) { err.textContent = 'Пароль должен быть не короче 4 символов'; err.classList.add('show'); return; }
   err.classList.remove('show');
-
   try {
     const s = await createFamily(name, pass, yourName, yourEmoji);
     $('newCode').textContent = s.code.split('').join(' ');
@@ -1000,17 +998,11 @@ $('doCreate').addEventListener('click', async () => {
 $('copyCode').addEventListener('click', async () => {
   const code = session?.code;
   if (!code) return;
-  try {
-    await navigator.clipboard.writeText(code);
-    toast('Код скопирован');
-  } catch {
-    toast('Код: ' + code);
-  }
+  try { await navigator.clipboard.writeText(code); toast('Код скопирован'); }
+  catch { toast('Код: ' + code); }
 });
 
-$('enterApp').addEventListener('click', async () => {
-  await enterMainApp();
-});
+$('enterApp').addEventListener('click', async () => { await enterMainApp(); });
 
 $('doJoin').addEventListener('click', async () => {
   const yourName = $('joinYourName').value.trim();
@@ -1018,26 +1010,12 @@ $('doJoin').addEventListener('click', async () => {
   const code = $('joinCode').value.trim().toUpperCase();
   const pass = $('joinPass').value.trim();
   const err = $('joinError');
-
-  if (!yourName) {
-    err.textContent = 'Введите ваше имя';
-    err.classList.add('show');
-    return;
-  }
-  if (code.length !== 6 || pass.length < 1) {
-    err.textContent = 'Введи код из 6 символов и пароль';
-    err.classList.add('show');
-    return;
-  }
+  if (!yourName) { err.textContent = 'Введите ваше имя'; err.classList.add('show'); return; }
+  if (code.length !== 6 || pass.length < 1) { err.textContent = 'Введи код из 6 символов и пароль'; err.classList.add('show'); return; }
   err.classList.remove('show');
-
   try {
     const s = await joinFamily(code, pass, yourName, yourEmoji);
-    if (!s) {
-      err.textContent = 'Семья не найдена или неверный пароль';
-      err.classList.add('show');
-      return;
-    }
+    if (!s) { err.textContent = 'Семья не найдена или неверный пароль'; err.classList.add('show'); return; }
     await enterMainApp();
   } catch (e) {
     console.error(e);
@@ -1059,17 +1037,10 @@ async function enterMainApp() {
 $('leaveBtn').addEventListener('click', leaveFamily);
 $('copyFamilyCode').addEventListener('click', async () => {
   if (!session?.code) return;
-  try {
-    await navigator.clipboard.writeText(session.code);
-    toast('Код семьи скопирован: ' + session.code);
-  } catch {
-    toast('Код: ' + session.code);
-  }
+  try { await navigator.clipboard.writeText(session.code); toast('Код семьи скопирован: ' + session.code); }
+  catch { toast('Код: ' + session.code); }
 });
 
-/* ============================================================
-   ОБЩИЕ КОНСТАНТЫ
-   ============================================================ */
 const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь',
                 'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const DOW = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
@@ -1079,12 +1050,10 @@ const FAMILY_GRAD = 'linear-gradient(135deg,#6c5ce7,#a29bfe)';
 function memberById(id) { return state.members.find(m => m.id === id); }
 function isFamily(id) { return id === FAMILY; }
 function isMe(id) { return id === currentUser.id; }
-
 function fmtDate(isoStr) {
   const d = new Date(isoStr + 'T00:00:00');
   return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
 }
-
 function formatTimeInput(raw) {
   const s = String(raw || '').trim();
   if (!s) return '';
@@ -1094,11 +1063,8 @@ function formatTimeInput(raw) {
     const digits = cleaned.replace(/\D/g, '');
     if (!digits) return '';
     if (digits.length <= 2) { h = parseInt(digits, 10); m = 0; }
-    else if (digits.length === 3) {
-      h = parseInt(digits.slice(0, 1), 10); m = parseInt(digits.slice(1), 10);
-    } else {
-      h = parseInt(digits.slice(0, 2), 10); m = parseInt(digits.slice(2, 4) || '0', 10);
-    }
+    else if (digits.length === 3) { h = parseInt(digits.slice(0, 1), 10); m = parseInt(digits.slice(1), 10); }
+    else { h = parseInt(digits.slice(0, 2), 10); m = parseInt(digits.slice(2, 4) || '0', 10); }
   } else {
     const parts = cleaned.split(':');
     h = parseInt((parts[0] || '').replace(/\D/g, '') || '0', 10);
@@ -1110,39 +1076,27 @@ function formatTimeInput(raw) {
   if (m < 0) m = 0; if (m > 59) m = 59;
   return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
 }
-
 function attachSmartTime(el) {
   el.addEventListener('input', () => {
     const v = el.value.replace(/[^\d:.\-–—]/g, '');
     if (v !== el.value) el.value = v;
   });
-  const commit = () => {
-    el.value = formatTimeInput(el.value);
-    normalizeTimeRange();
-  };
+  const commit = () => { el.value = formatTimeInput(el.value); normalizeTimeRange(); };
   el.addEventListener('blur', commit);
   el.addEventListener('change', commit);
-  el.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); commit(); }
-  });
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); commit(); } });
 }
-
 function normalizeTimeRange() {
   const s = $('eventTime').value;
   const e = $('eventTimeEnd').value;
-  if (s && e && e < s) {
-    $('eventTime').value = e;
-    $('eventTimeEnd').value = s;
-  }
+  if (s && e && e < s) { $('eventTime').value = e; $('eventTimeEnd').value = s; }
 }
-
 function durationMin(start, end) {
   if (!start || !end) return 0;
   const [sh, sm] = start.split(':').map(Number);
   const [eh, em] = end.split(':').map(Number);
   return (eh * 60 + em) - (sh * 60 + sm);
 }
-
 function fmtDuration(start, end) {
   const mins = durationMin(start, end);
   if (mins <= 0) return '';
@@ -1151,8 +1105,76 @@ function fmtDuration(start, end) {
   if (h) return `${h}ч`;
   return `${m}м`;
 }
-
 function eventSortKey(e) { return e.time || '99:99'; }
+
+/* ============================================================
+   МИНИ-ГАНТ ДЛЯ КАЛЕНДАРЯ
+   ============================================================ */
+/* Время "HH:MM" → процент от 24 часов (0..100) */
+function timeToPct(hhmm) {
+  if (!hhmm) return 0;
+  const parts = String(hhmm).split(':');
+  const h = parseInt(parts[0], 10) || 0;
+  const m = parseInt(parts[1], 10) || 0;
+  const total = Math.max(0, Math.min(24, h + m / 60));
+  return (total / 24) * 100;
+}
+
+/* Одна полоска события */
+function renderEventBar(e, color) {
+  // Без времени — «весь день», полупрозрачная полоса во всю ширину
+  if (!e.time && !e.endTime) {
+    return `<div class="gantt-event gantt-event-allday" style="background:${color}"></div>`;
+  }
+  // Только начало — рисуем часовой блок от старта
+  if (e.time && !e.endTime) {
+    const left = timeToPct(e.time);
+    return `<div class="gantt-event" style="left:${left}%;width:${100/24}%;background:${color}"></div>`;
+  }
+  // Только конец — от начала суток до конца
+  if (!e.time && e.endTime) {
+    const right = timeToPct(e.endTime);
+    return `<div class="gantt-event" style="left:0%;width:${right}%;background:${color}"></div>`;
+  }
+  // Оба заданы
+  let left = timeToPct(e.time);
+  let right = timeToPct(e.endTime);
+  if (right <= left) right = left + (100 / 24); // защита от нулевой/перевёрнутой ширины
+  return `<div class="gantt-event" style="left:${left}%;width:${right - left}%;background:${color}"></div>`;
+}
+
+/* Собирает весь гант клетки дня */
+function buildDayGantt(evs) {
+  if (!state.members.length && !evs.length) return '';
+
+  const familyEvents = [];
+  const byMember = {};
+  state.members.forEach(m => { byMember[m.id] = []; });
+
+  evs.forEach(e => {
+    if (isFamily(e.memberId)) familyEvents.push(e);
+    else if (byMember[e.memberId]) byMember[e.memberId].push(e);
+  });
+
+  let html = '';
+
+  // Строка для общих событий — тонкая, сверху
+  if (familyEvents.length) {
+    html += `<div class="gantt-row gantt-row-family">`;
+    familyEvents.forEach(e => { html += renderEventBar(e, 'transparent'); });
+    html += `</div>`;
+  }
+
+  // Строки по участникам — в том порядке, в котором они в семье
+  state.members.forEach(m => {
+    const evs = byMember[m.id] || [];
+    html += `<div class="gantt-row">`;
+    evs.forEach(e => { html += renderEventBar(e, m.color || '#6c5ce7'); });
+    html += `</div>`;
+  });
+
+  return html;
+}
 
 /* ============================================================
    ШАПКА / ТАБЫ
@@ -1182,7 +1204,6 @@ function renderMemberSelects() {
   $('taskAssignee').innerHTML = opts;
   $('eventMember').innerHTML = opts;
 }
-
 function renderTaskFilters() {
   const wrap = $('taskFilters');
   let html = `<button class="chip-btn ${taskFilter === 'all' ? 'active' : ''}" data-f="all">Все</button>`;
@@ -1192,20 +1213,16 @@ function renderTaskFilters() {
   });
   wrap.innerHTML = html;
 }
-
 $('taskFilters').addEventListener('click', e => {
   const b = e.target.closest('.chip-btn');
   if (!b) return;
   taskFilter = b.dataset.f;
   renderTasks();
 });
-
 function renderTasks() {
   renderTaskFilters();
-
   let items = state.tasks.slice();
   if (taskFilter !== 'all') items = items.filter(t => t.assigneeId === taskFilter);
-
   items.sort((a, b) => {
     if (a.done !== b.done) return a.done ? 1 : -1;
     if (a.due && b.due) return a.due.localeCompare(b.due);
@@ -1213,7 +1230,6 @@ function renderTasks() {
     if (b.due) return 1;
     return 0;
   });
-
   const total = state.tasks.length;
   const done = state.tasks.filter(t => t.done).length;
   const pct = total ? Math.round(done / total * 100) : 0;
@@ -1226,7 +1242,6 @@ function renderTasks() {
     list.innerHTML = `<div class="empty"><span class="big">📝</span>Пока нет задач. Добавьте первую!</div>`;
     return;
   }
-
   list.innerHTML = items.map(t => {
     const m = memberById(t.assigneeId);
     const overdue = t.due && !t.done && t.due < TODAY;
@@ -1237,7 +1252,6 @@ function renderTasks() {
     }
     if (t.due) chips.push(`<span class="chip ${overdue ? 'overdue' : ''}">📅 ${fmtDate(t.due)}${overdue ? ' · просрочено' : ''}</span>`);
     if (t.priority && t.priority !== 'normal') chips.push(`<span class="chip prio-${t.priority}">${PRIO_LABEL[t.priority]}</span>`);
-
     return `<div class="item ${t.done ? 'done' : ''}" data-id="${t.id}">
       <button class="check" title="Отметить"></button>
       <div class="item-body">
@@ -1248,16 +1262,13 @@ function renderTasks() {
     </div>`;
   }).join('');
 }
-
 $('addTaskBtn').addEventListener('click', addTask);
 $('taskTitle').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
-
 function addTask() {
   const title = $('taskTitle').value.trim();
   if (!title) { $('taskTitle').focus(); return; }
   state.tasks.push({
-    id: uid(),
-    title,
+    id: uid(), title,
     assigneeId: $('taskAssignee').value || null,
     due: $('taskDue').value || null,
     priority: $('taskPriority').value,
@@ -1271,7 +1282,6 @@ function addTask() {
   renderTasks();
   $('taskTitle').focus();
 }
-
 $('taskList').addEventListener('click', e => {
   const row = e.target.closest('.item');
   if (!row) return;
@@ -1338,18 +1348,17 @@ function renderCalendar() {
     if (dateStr === TODAY) cls.push('today');
     if (dateStr === selectedDate) cls.push('selected');
 
-    const shown = evs.slice(0, 2).map(e => {
-      const family = isFamily(e.memberId);
-      const m = family ? null : memberById(e.memberId);
-      const bg = family ? FAMILY_GRAD : (m ? m.color : '#6c5ce7');
-      const timePart = e.time ? `${e.time} ` : '';
-      const label = family ? `👨‍👩‍👧 ${timePart}${e.title}` : `${timePart}${e.title}`;
-      return `<div class="ev" style="background:${bg}" title="${esc(e.title)}">${esc(label)}</div>`;
-    }).join('');
-    const more = evs.length > 2 ? `<div class="ev-more">+${evs.length - 2}</div>` : '';
+    // Есть ли события без времени (all-day) — покажем точку рядом с числом
+    const hasAllDay = evs.some(e => !e.time && !e.endTime);
+
+    const gantt = buildDayGantt(evs);
 
     html += `<div class="${cls.join(' ')}" data-date="${dateStr}">
-      <div class="num">${d}</div>${shown}${more}
+      <div class="day-head">
+        <span class="num">${d}</span>
+        ${hasAllDay ? `<span class="day-allday" title="Есть событие без времени"></span>` : ''}
+      </div>
+      <div class="day-gantt">${gantt}</div>
     </div>`;
   }
 
@@ -1389,6 +1398,7 @@ function renderDayEvents() {
     if (e.time && e.endTime) chips.push(`<span class="chip">🕐 ${esc(e.time)} – ${esc(e.endTime)}</span>`);
     else if (e.time) chips.push(`<span class="chip">🕐 с ${esc(e.time)}</span>`);
     else if (e.endTime) chips.push(`<span class="chip">🕐 до ${esc(e.endTime)}</span>`);
+    else chips.push(`<span class="chip">📌 без времени</span>`);
 
     const dur = fmtDuration(e.time, e.endTime);
     if (dur) chips.push(`<span class="chip chip-duration">⏱ ${dur}</span>`);
@@ -1426,11 +1436,8 @@ function addEvent() {
   const family = $('eventWholeFamily').checked;
 
   state.events.push({
-    id: uid(),
-    title,
-    date: selectedDate,
-    time: start,
-    endTime: end,
+    id: uid(), title, date: selectedDate,
+    time: start, endTime: end,
     memberId: family ? FAMILY : ($('eventMember').value || null)
   });
 
@@ -1460,7 +1467,6 @@ function renderShopping() {
   const total = state.shopping.length;
   const bought = state.shopping.filter(i => i.done).length;
   const pct = total ? Math.round(bought / total * 100) : 0;
-
   $('shopProgress').innerHTML = total ? `
     <div class="progress-top"><span>Куплено ${bought} из ${total}</span><span>${pct}%</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>` : '';
@@ -1470,7 +1476,6 @@ function renderShopping() {
     list.innerHTML = `<div class="empty"><span class="big">🛒</span>Список покупок пуст</div>`;
     return;
   }
-
   list.innerHTML = state.shopping.map(i => `
     <div class="item ${i.done ? 'done' : ''}" data-id="${i.id}">
       <button class="check"></button>
@@ -1478,10 +1483,8 @@ function renderShopping() {
       <button class="del">✕</button>
     </div>`).join('');
 }
-
 $('addShopBtn').addEventListener('click', addShopItem);
 $('shopInput').addEventListener('keydown', e => { if (e.key === 'Enter') addShopItem(); });
-
 function addShopItem() {
   const text = $('shopInput').value.trim();
   if (!text) { $('shopInput').focus(); return; }
@@ -1493,7 +1496,6 @@ function addShopItem() {
   renderShopping();
   $('shopInput').focus();
 }
-
 $('shopList').addEventListener('click', e => {
   const row = e.target.closest('.item');
   if (!row) return;
@@ -1505,12 +1507,10 @@ $('shopList').addEventListener('click', e => {
     save(); renderShopping();
   }
 });
-
 $('clearBoughtBtn').addEventListener('click', () => {
   state.shopping = state.shopping.filter(i => !i.done);
   save(); renderShopping();
 });
-
 $('clearAllShopBtn').addEventListener('click', () => {
   if (!state.shopping.length) return;
   if (confirm('Очистить весь список покупок?')) {
@@ -1528,25 +1528,17 @@ function renderMembers() {
     list.innerHTML = `<div class="empty"><span class="big">👪</span>Пока никого</div>`;
     return;
   }
-
   list.innerHTML = state.members.map(m => {
     const open = state.tasks.filter(t => t.assigneeId === m.id && !t.done).length;
     const done = state.tasks.filter(t => t.assigneeId === m.id && t.done).length;
     const me = isMe(m.id);
-
-    const avatarInner = m.photo
-      ? `<img src="${esc(m.photo)}" alt="">`
-      : esc(m.emoji || DEFAULT_EMOJI);
-
+    const avatarInner = m.photo ? `<img src="${esc(m.photo)}" alt="">` : esc(m.emoji || DEFAULT_EMOJI);
     const meBadge = me ? ' <span style="color:#12a05c;font-size:11px">· вы</span>' : '';
     const tgBadge = m.isTelegramUser ? ' <span style="color:#6c5ce7;font-size:11px">· TG</span>' : '';
-
     const needNameHint = me && /^Устройство /.test(m.name);
-
     const actions = me
       ? `<button class="edit-name-btn" title="Изменить имя и аватар">✏️</button>`
       : `<button class="del" title="Удалить">✕</button>`;
-
     return `<div class="member" data-id="${m.id}">
       <div class="avatar" style="background:${m.color}22">${avatarInner}</div>
       <div class="member-body">
@@ -1557,28 +1549,28 @@ function renderMembers() {
       <div class="member-actions">${actions}</div>
     </div>`;
   }).join('');
-
-  if (session) {
-    $('showFamilyCode').textContent = session.code;
-  }
+  if (session) $('showFamilyCode').textContent = session.code;
 }
 
-/* ---------- Inline-редактирование своего профиля ---------- */
 function startEditProfile(memberEl) {
   const me = state.members.find(m => m.id === currentUser.id);
   if (!me) return;
-
   const body = memberEl.querySelector('.member-body');
   const actions = memberEl.querySelector('.member-actions');
   if (!body || !actions) return;
 
   const oldName = me.name;
   const oldEmoji = me.emoji || DEFAULT_EMOJI;
+  const oldColor = me.color;
 
   body.innerHTML = `
     <input type="text" class="name-edit-input" id="editProfileName"
            value="${esc(oldName)}" maxlength="30" autocomplete="off">
     <div class="emoji-picker small" id="editProfileEmoji"></div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+      <span style="font-size:12px;color:var(--muted);font-weight:600">Цвет:</span>
+      <input type="color" id="editProfileColor" value="${esc(oldColor)}">
+    </div>
   `;
   buildEmojiPicker($('editProfileEmoji'), oldEmoji);
 
@@ -1592,35 +1584,33 @@ function startEditProfile(memberEl) {
   input.select();
 
   let finished = false;
-
   const commit = () => {
     if (finished) return;
     finished = true;
     const newName = input.value.trim();
     const newEmoji = getEmojiFromPicker($('editProfileEmoji'));
+    const newColor = $('editProfileColor').value;
     if (!newName) { cancel(); return; }
 
-    if (newName !== oldName || newEmoji !== oldEmoji) {
+    if (newName !== oldName || newEmoji !== oldEmoji || newColor !== oldColor) {
       me.name = newName;
       me.emoji = newEmoji;
+      me.color = newColor;
       if (newEmoji !== oldEmoji && me.photo) me.photo = null;
       setSavedMyName(newName);
       setSavedMyEmoji(newEmoji);
       save();
       toast('Профиль обновлён');
     }
-    renderMembers();
+    renderAll();
   };
-
   const cancel = () => {
     if (finished) return;
     finished = true;
     renderMembers();
   };
-
   $('saveProfileBtn').addEventListener('click', commit);
   $('cancelProfileBtn').addEventListener('click', cancel);
-
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') { e.preventDefault(); commit(); }
     if (e.key === 'Escape') { e.preventDefault(); cancel(); }
@@ -1628,7 +1618,6 @@ function startEditProfile(memberEl) {
 }
 
 buildEmojiPicker($('memberEmojiPicker'), DEFAULT_EMOJI);
-
 $('addMemberBtn').addEventListener('click', addMember);
 $('memberName').addEventListener('keydown', e => { if (e.key === 'Enter') addMember(); });
 
@@ -1640,7 +1629,7 @@ function addMember() {
     id: uid(),
     name,
     emoji,
-    color: $('memberColor').value,
+    color: $('memberColor').value || pickMemberColor(),
     isTelegramUser: false
   });
   $('memberName').value = '';
@@ -1651,12 +1640,7 @@ function addMember() {
 $('memberList').addEventListener('click', e => {
   const row = e.target.closest('.member');
   if (!row) return;
-
-  if (e.target.closest('.edit-name-btn')) {
-    startEditProfile(row);
-    return;
-  }
-
+  if (e.target.closest('.edit-name-btn')) { startEditProfile(row); return; }
   if (!e.target.closest('.del')) return;
   const id = row.dataset.id;
   if (isMe(id)) return;
@@ -1694,9 +1678,7 @@ function renderAll() {
     tg.setBackgroundColor?.('#f2f4fa');
     tg.disableVerticalSwipes?.();
   }
-
   await initFirebase();
-
   if (session) {
     $('onboarding').style.display = 'none';
     $('app').style.display = '';
