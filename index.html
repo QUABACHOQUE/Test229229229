@@ -201,26 +201,63 @@
   }
   .time-range .time-input::placeholder{color:#c6ccdb;font-weight:400}
 
-  .toggle-family{
-    display:flex;align-items:center;gap:7px;padding:10px 14px;
-    border:1px solid var(--line);border-radius:10px;background:#f7f8fd;
-    cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);
-    transition:.15s;user-select:none;white-space:nowrap;
+  .multiselect{position:relative;flex:0 1 200px;min-width:170px}
+  .multiselect-trigger{
+    width:100%;font:inherit;font-size:14px;
+    padding:10px 30px 10px 12px;
+    background:#f7f8fd;border:1px solid var(--line);border-radius:10px;
+    text-align:left;cursor:pointer;color:var(--text);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    position:relative;transition:.15s;display:block;
   }
-  .toggle-family:hover{border-color:#cfd5e8;color:var(--text)}
-  .toggle-family input{display:none}
-  .toggle-family .toggle-box{
-    width:16px;height:16px;border-radius:5px;border:1.5px solid #ccd2e4;
-    background:#fff;display:flex;align-items:center;justify-content:center;
-    font-size:11px;color:#fff;transition:.15s;flex:0 0 auto;
+  .multiselect-trigger::after{
+    content:"▾";position:absolute;right:11px;top:50%;
+    transform:translateY(-50%);color:#8b93a8;font-size:10px;
+    pointer-events:none;
   }
-  .toggle-family input:checked ~ .toggle-box{
+  .multiselect-trigger:hover{border-color:#cfd5e8}
+  .multiselect.open .multiselect-trigger{
+    border-color:var(--accent);background:#fff;
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+
+  .multiselect-menu{
+    position:absolute;top:calc(100% + 4px);left:0;right:0;
+    background:#fff;border:1px solid var(--line);border-radius:10px;
+    box-shadow:0 8px 24px rgba(30,40,80,.14);
+    padding:5px;z-index:30;
+    max-height:250px;overflow-y:auto;
+    display:none;
+  }
+  .multiselect.open .multiselect-menu{display:block}
+
+  .multiselect-option{
+    display:flex;align-items:center;gap:9px;
+    padding:8px 9px;border-radius:6px;
+    cursor:pointer;font-size:13.5px;
+    transition:.12s;user-select:none;
+    color:var(--text);
+  }
+  .multiselect-option:hover{background:#f7f8fd}
+  .multiselect-option.all{
+    border-bottom:1px solid var(--line);
+    margin-bottom:4px;padding-bottom:9px;
+    font-weight:700;
+  }
+  .multiselect-option input{display:none}
+  .multiselect-check{
+    width:16px;height:16px;border-radius:4px;
+    border:1.5px solid #ccd2e4;background:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:10px;color:#fff;flex:0 0 auto;
+    transition:.12s;
+  }
+  .multiselect-option:hover .multiselect-check{border-color:#b0b8ca}
+  .multiselect-option input:checked ~ .multiselect-check{
     background:var(--accent);border-color:var(--accent);
   }
-  .toggle-family input:checked ~ .toggle-box::after{content:"✓"}
-  .toggle-family:has(input:checked){
-    background:var(--accent-soft);border-color:var(--accent);color:var(--accent);
-  }
+  .multiselect-option input:checked ~ .multiselect-check::after{content:"✓"}
+  .multiselect-emoji{font-size:15px;flex:0 0 auto;line-height:1}
 
   .list{display:flex;flex-direction:column;gap:8px}
   .item{
@@ -297,10 +334,7 @@
   .chip-btn:hover{border-color:#cfd5e8}
   .chip-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
-  /* ============================================================
-     КАЛЕНДАРЬ С МИНИ-ГАНТОМ
-     База — ровно под 5 членов семьи. Больше 5 → растёт.
-     ============================================================ */
+  /* КАЛЕНДАРЬ */
   .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
   .cal-title{font-size:17px;font-weight:700;text-transform:capitalize}
   .cal-nav{display:flex;gap:6px}
@@ -312,9 +346,7 @@
   .icon-btn:hover{background:#f7f8fd;color:var(--text)}
 
   .cal-grid{
-    display:grid;
-    grid-template-columns:repeat(7,1fr);
-    gap:4px;
+    display:grid;grid-template-columns:repeat(7,1fr);gap:4px;
     --members:5;
   }
   .dow{
@@ -322,20 +354,12 @@
     padding:4px 0;text-transform:uppercase;letter-spacing:.5px;
   }
 
-  /* База фиксирована под 5 членов.
-     До 5 человек — 60px, дальше растёт на 6px за каждого. */
   .day{
     min-height: max(60px, calc(30px + var(--members) * 6px));
-    border-radius:10px;
-    background:#f8f9fd;
-    border:1px solid transparent;
-    padding:4px 5px 5px;
-    cursor:pointer;
-    display:flex;
-    flex-direction:column;
-    gap:3px;
-    transition:.13s;
-    overflow:hidden;
+    border-radius:10px;background:#f8f9fd;border:1px solid transparent;
+    padding:4px 5px 5px;cursor:pointer;
+    display:flex;flex-direction:column;gap:3px;
+    transition:.13s;overflow:hidden;
   }
   .day:hover{background:#f1f3fb}
   .day.blank{background:transparent;cursor:default;border:0}
@@ -344,9 +368,7 @@
 
   .day-head{
     display:flex;align-items:center;justify-content:space-between;
-    gap:4px;
-    line-height:1;
-    flex:0 0 auto;
+    gap:4px;line-height:1;flex:0 0 auto;
   }
   .day .num{font-size:12px;font-weight:700;color:#525a70}
   .day.today .num{color:var(--accent)}
@@ -356,18 +378,11 @@
   }
 
   .day-gantt{
-    flex:1 1 auto;
-    display:flex;
-    flex-direction:column;
-    gap:1px;
-    position:relative;
-    min-height:20px;
+    flex:1 1 auto;display:flex;flex-direction:column;gap:1px;
+    position:relative;min-height:20px;
   }
   .day-gantt::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
+    content:"";position:absolute;inset:0;pointer-events:none;
     background-image:
       linear-gradient(90deg, transparent 24.5%, rgba(30,35,48,.05) 24.5%, rgba(30,35,48,.05) 25.5%, transparent 25.5%),
       linear-gradient(90deg, transparent 49.5%, rgba(30,35,48,.05) 49.5%, rgba(30,35,48,.05) 50.5%, transparent 50.5%),
@@ -376,34 +391,23 @@
   }
 
   .gantt-row{
-    position:relative;
-    height:5px;
-    border-radius:2px;
-    background:rgba(30,35,48,.045);
-    overflow:hidden;
-    z-index:1;
-  }
-  .gantt-row-family{
-    background:transparent;
-    height:3px;
-    overflow:visible;
-  }
-  .gantt-row-family .gantt-event{
-    top:0;bottom:0;
-    border-radius:2px;
-    background:linear-gradient(135deg,#6c5ce7,#a29bfe);
+    position:relative;height:5px;border-radius:2px;
+    background:rgba(30,35,48,.045);overflow:hidden;z-index:1;
   }
 
   .gantt-event{
-    position:absolute;
-    top:0;
-    bottom:0;
-    min-width:2px;
-    border-radius:2px;
+    position:absolute;top:0;bottom:0;min-width:2px;border-radius:2px;
   }
   .gantt-event-allday{
-    left:0;right:0;width:auto!important;
-    opacity:.28;
+    left:0;right:0;width:auto!important;opacity:.28;
+  }
+  /* Красная подсветка пересечений */
+  .gantt-event-overlap{
+    position:absolute;top:0;bottom:0;
+    background:#ff2d2d;
+    border-radius:2px;
+    z-index:5;
+    box-shadow:0 0 0 0.5px rgba(255,45,45,.6);
   }
 
   @media(max-width:560px){
@@ -413,7 +417,6 @@
     }
     .day .num{font-size:13px}
     .gantt-row{height:4px}
-    .gantt-row-family{height:2.5px}
     .day-gantt{gap:1px}
   }
 
@@ -632,12 +635,13 @@
                  inputmode="numeric" placeholder="14:00" maxlength="5">
         </div>
 
-        <select id="eventMember" class="sm"></select>
-        <label class="toggle-family" title="Событие для всей семьи">
-          <input type="checkbox" id="eventWholeFamily">
-          <span class="toggle-box"></span>
-          <span>👨‍👩‍👧 Вся семья</span>
-        </label>
+        <div class="multiselect" id="eventMemberSelect">
+          <button type="button" class="multiselect-trigger" id="eventMemberTrigger">
+            <span id="eventMemberLabel">Выберите…</span>
+          </button>
+          <div class="multiselect-menu" id="eventMemberMenu"></div>
+        </div>
+
         <button class="btn" id="addEventBtn">Добавить</button>
       </div>
     </div>
@@ -695,7 +699,6 @@ const LS_MY_NAME  = 'familyhub.myName';
 const LS_MY_EMOJI = 'familyhub.myEmoji';
 const uid = () => Math.random().toString(36).slice(2, 10);
 const $ = id => document.getElementById(id);
-const FAMILY = 'all';
 
 function iso(d) {
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -1052,7 +1055,6 @@ const PRIO_LABEL = { high: 'Срочно', normal: 'Обычное', low: 'Не 
 const FAMILY_GRAD = 'linear-gradient(135deg,#6c5ce7,#a29bfe)';
 
 function memberById(id) { return state.members.find(m => m.id === id); }
-function isFamily(id) { return id === FAMILY; }
 function isMe(id) { return id === currentUser.id; }
 function fmtDate(isoStr) {
   const d = new Date(isoStr + 'T00:00:00');
@@ -1112,7 +1114,134 @@ function fmtDuration(start, end) {
 function eventSortKey(e) { return e.time || '99:99'; }
 
 /* ============================================================
-   МИНИ-ГАНТ ДЛЯ КАЛЕНДАРЯ
+   РАБОТА С УЧАСТНИКАМИ СОБЫТИЯ
+   ============================================================ */
+function getEventMemberIds(e) {
+  if (Array.isArray(e.memberIds)) return e.memberIds;
+  if (e.memberId === 'all') return state.members.map(m => m.id);
+  if (e.memberId) return [e.memberId];
+  return [];
+}
+
+function isFamilyEvent(e) {
+  const ids = getEventMemberIds(e);
+  return state.members.length > 0 && ids.length === state.members.length;
+}
+
+function primaryEventColor(e) {
+  const ids = getEventMemberIds(e);
+  if (ids.length === 0) return '#6c5ce7';
+  if (isFamilyEvent(e)) return FAMILY_GRAD;
+  const m = memberById(ids[0]);
+  return m ? m.color : '#6c5ce7';
+}
+
+/* ============================================================
+   МУЛЬТИСЕЛЕКТ ОТВЕТСТВЕННЫХ
+   ============================================================ */
+let selectedEventMembers = [];
+
+function renderEventMemberMenu() {
+  const menu = $('eventMemberMenu');
+  if (!menu) return;
+  const allChecked = state.members.length > 0 && selectedEventMembers.length === state.members.length;
+
+  let html = `
+    <label class="multiselect-option all">
+      <input type="checkbox" data-all ${allChecked ? 'checked' : ''}>
+      <span class="multiselect-check"></span>
+      <span>Все</span>
+    </label>
+  `;
+  state.members.forEach(m => {
+    const checked = selectedEventMembers.includes(m.id);
+    html += `
+      <label class="multiselect-option">
+        <input type="checkbox" data-mid="${m.id}" ${checked ? 'checked' : ''}>
+        <span class="multiselect-check"></span>
+        <span class="multiselect-emoji">${esc(m.emoji || DEFAULT_EMOJI)}</span>
+        <span>${esc(m.name)}${isMe(m.id) ? ' · я' : ''}</span>
+      </label>
+    `;
+  });
+  menu.innerHTML = html;
+}
+
+function updateEventMemberLabel() {
+  const label = $('eventMemberLabel');
+  if (!label) return;
+  if (!selectedEventMembers.length) {
+    label.textContent = 'Не выбрано';
+    label.style.color = '#8b93a8';
+    return;
+  }
+  label.style.color = '';
+  if (state.members.length > 0 && selectedEventMembers.length === state.members.length) {
+    label.textContent = '👨‍👩‍👧 Вся семья';
+    return;
+  }
+  if (selectedEventMembers.length === 1) {
+    const m = memberById(selectedEventMembers[0]);
+    label.textContent = m ? `${m.emoji || ''} ${m.name}` : '1 участник';
+    return;
+  }
+  const first = memberById(selectedEventMembers[0]);
+  const rest = selectedEventMembers.length - 1;
+  label.textContent = first ? `${first.emoji || ''} ${first.name} +${rest}` : `${selectedEventMembers.length} выбрано`;
+}
+
+function initEventMemberSelect() {
+  const selfInMembers = state.members.some(m => m.id === currentUser.id);
+  if (selfInMembers) {
+    selectedEventMembers = [currentUser.id];
+  } else if (state.members[0]) {
+    selectedEventMembers = [state.members[0].id];
+  } else {
+    selectedEventMembers = [];
+  }
+  renderEventMemberMenu();
+  updateEventMemberLabel();
+}
+
+function ensureEventMemberSelection() {
+  if (selectedEventMembers.length > 0) return;
+  if (state.members.length === 0) return;
+  initEventMemberSelect();
+}
+
+$('eventMemberTrigger').addEventListener('click', e => {
+  e.stopPropagation();
+  $('eventMemberSelect').classList.toggle('open');
+});
+
+document.addEventListener('click', e => {
+  if (!$('eventMemberSelect').contains(e.target)) {
+    $('eventMemberSelect').classList.remove('open');
+  }
+});
+
+$('eventMemberMenu').addEventListener('change', e => {
+  const input = e.target;
+  if (input.dataset.all !== undefined) {
+    if (input.checked) {
+      selectedEventMembers = state.members.map(m => m.id);
+    } else {
+      selectedEventMembers = [];
+    }
+  } else if (input.dataset.mid) {
+    const id = input.dataset.mid;
+    if (input.checked) {
+      if (!selectedEventMembers.includes(id)) selectedEventMembers.push(id);
+    } else {
+      selectedEventMembers = selectedEventMembers.filter(x => x !== id);
+    }
+  }
+  renderEventMemberMenu();
+  updateEventMemberLabel();
+});
+
+/* ============================================================
+   МИНИ-ГАНТ
    ============================================================ */
 function timeToPct(hhmm) {
   if (!hhmm) return 0;
@@ -1121,6 +1250,15 @@ function timeToPct(hhmm) {
   const m = parseInt(parts[1], 10) || 0;
   const total = Math.max(0, Math.min(24, h + m / 60));
   return (total / 24) * 100;
+}
+
+/* Минуты от начала дня */
+function timeToMin(hhmm) {
+  if (!hhmm) return 0;
+  const parts = String(hhmm).split(':');
+  const h = parseInt(parts[0], 10) || 0;
+  const m = parseInt(parts[1], 10) || 0;
+  return h * 60 + m;
 }
 
 function renderEventBar(e, color) {
@@ -1141,31 +1279,70 @@ function renderEventBar(e, color) {
   return `<div class="gantt-event" style="left:${left}%;width:${right - left}%;background:${color}"></div>`;
 }
 
+/* Находит пересечения между событиями одного человека.
+   Возвращает массив [startMin, endMin] — объединённые интервалы пересечений. */
+function computeOverlaps(events) {
+  const timed = events.filter(e => e.time && e.endTime);
+  if (timed.length < 2) return [];
+
+  const raw = [];
+  for (let i = 0; i < timed.length; i++) {
+    for (let j = i + 1; j < timed.length; j++) {
+      const aS = timeToMin(timed[i].time), aE = timeToMin(timed[i].endTime);
+      const bS = timeToMin(timed[j].time), bE = timeToMin(timed[j].endTime);
+      const s = Math.max(aS, bS);
+      const e = Math.min(aE, bE);
+      if (e > s) raw.push([s, e]);
+    }
+  }
+  if (!raw.length) return [];
+
+  raw.sort((a, b) => a[0] - b[0]);
+  const merged = [];
+  for (const [s, e] of raw) {
+    const last = merged[merged.length - 1];
+    if (last && last[1] >= s) {
+      last[1] = Math.max(last[1], e);
+    } else {
+      merged.push([s, e]);
+    }
+  }
+  return merged;
+}
+
+/* Рисует одну строку участника: события + красные наложения */
+function renderMemberRow(evs, color) {
+  let html = `<div class="gantt-row">`;
+  evs.forEach(e => { html += renderEventBar(e, color); });
+
+  const overlaps = computeOverlaps(evs);
+  overlaps.forEach(([s, e]) => {
+    const left = (s / (24 * 60)) * 100;
+    const width = ((e - s) / (24 * 60)) * 100;
+    html += `<div class="gantt-event-overlap" style="left:${left}%;width:${width}%"></div>`;
+  });
+
+  html += `</div>`;
+  return html;
+}
+
 function buildDayGantt(evs) {
   if (!state.members.length && !evs.length) return '';
 
-  const familyEvents = [];
   const byMember = {};
   state.members.forEach(m => { byMember[m.id] = []; });
 
   evs.forEach(e => {
-    if (isFamily(e.memberId)) familyEvents.push(e);
-    else if (byMember[e.memberId]) byMember[e.memberId].push(e);
+    const ids = getEventMemberIds(e);
+    ids.forEach(id => {
+      if (byMember[id]) byMember[id].push(e);
+    });
   });
 
   let html = '';
-
-  if (familyEvents.length) {
-    html += `<div class="gantt-row gantt-row-family">`;
-    familyEvents.forEach(e => { html += renderEventBar(e, 'transparent'); });
-    html += `</div>`;
-  }
-
   state.members.forEach(m => {
-    const evs = byMember[m.id] || [];
-    html += `<div class="gantt-row">`;
-    evs.forEach(e => { html += renderEventBar(e, m.color || '#6c5ce7'); });
-    html += `</div>`;
+    const memberEvs = byMember[m.id] || [];
+    html += renderMemberRow(memberEvs, m.color || '#6c5ce7');
   });
 
   return html;
@@ -1197,7 +1374,6 @@ function renderMemberSelects() {
     .map(m => `<option value="${m.id}">${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}</option>`)
     .join('');
   $('taskAssignee').innerHTML = opts;
-  $('eventMember').innerHTML = opts;
 }
 function renderTaskFilters() {
   const wrap = $('taskFilters');
@@ -1319,14 +1495,9 @@ $('todayBtn').addEventListener('click', () => {
 attachSmartTime($('eventTime'));
 attachSmartTime($('eventTimeEnd'));
 
-$('eventWholeFamily').addEventListener('change', e => {
-  $('eventMember').style.display = e.target.checked ? 'none' : '';
-});
-
 function renderCalendar() {
   $('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
 
-  /* Адаптивная высота: сообщаем CSS, сколько человек в семье */
   $('calGrid').style.setProperty('--members', state.members.length || 1);
 
   const first = new Date(calYear, calMonth, 1);
@@ -1386,9 +1557,9 @@ function renderDayEvents() {
   }
 
   list.innerHTML = evs.map(e => {
-    const family = isFamily(e.memberId);
-    const m = family ? null : memberById(e.memberId);
-    const bg = family ? FAMILY_GRAD : (m ? m.color : '#6c5ce7');
+    const bg = primaryEventColor(e);
+    const ids = getEventMemberIds(e);
+    const family = isFamilyEvent(e);
 
     const chips = [];
     if (e.time && e.endTime) chips.push(`<span class="chip">🕐 ${esc(e.time)} – ${esc(e.endTime)}</span>`);
@@ -1399,10 +1570,17 @@ function renderDayEvents() {
     const dur = fmtDuration(e.time, e.endTime);
     if (dur) chips.push(`<span class="chip chip-duration">⏱ ${dur}</span>`);
 
-    if (family) chips.push(`<span class="chip chip-family">👨‍👩‍👧 Вся семья</span>`);
-    else if (m) {
-      const meClass = isMe(m.id) ? 'chip-me' : '';
-      chips.push(`<span class="chip ${meClass}" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}${isMe(m.id) ? ' · это я' : ''}</span>`);
+    if (family) {
+      chips.push(`<span class="chip chip-family">👨‍👩‍👧 Вся семья</span>`);
+    } else if (ids.length === 0) {
+      chips.push(`<span class="chip">Без ответственного</span>`);
+    } else {
+      ids.forEach(id => {
+        const m = memberById(id);
+        if (!m) return;
+        const meClass = isMe(m.id) ? 'chip-me' : '';
+        chips.push(`<span class="chip ${meClass}" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}${isMe(m.id) ? ' · это я' : ''}</span>`);
+      });
     }
 
     return `<div class="item" data-id="${e.id}">
@@ -1429,22 +1607,21 @@ function addEvent() {
 
   const start = $('eventTime').value || '';
   const end = $('eventTimeEnd').value || '';
-  const family = $('eventWholeFamily').checked;
+  const memberIds = selectedEventMembers.slice();
 
   state.events.push({
     id: uid(), title, date: selectedDate,
     time: start, endTime: end,
-    memberId: family ? FAMILY : ($('eventMember').value || null)
+    memberIds
   });
 
   $('eventTitle').value = '';
   $('eventTime').value = '';
   $('eventTimeEnd').value = '';
-  $('eventWholeFamily').checked = false;
-  $('eventMember').style.display = '';
 
   save();
   renderCalendar();
+  initEventMemberSelect();
   $('eventTitle').focus();
 }
 
@@ -1645,7 +1822,13 @@ $('memberList').addEventListener('click', e => {
   if (!confirm(`Удалить «${m.name}»? Их задачи и события останутся, но без исполнителя.`)) return;
   state.members = state.members.filter(x => x.id !== id);
   state.tasks.forEach(t => { if (t.assigneeId === id) t.assigneeId = null; });
-  state.events.forEach(ev => { if (ev.memberId === id) ev.memberId = null; });
+  state.events.forEach(ev => {
+    if (Array.isArray(ev.memberIds)) {
+      ev.memberIds = ev.memberIds.filter(x => x !== id);
+    }
+    if (ev.memberId === id) ev.memberId = null;
+  });
+  selectedEventMembers = selectedEventMembers.filter(x => x !== id);
   if (taskFilter === id) taskFilter = 'all';
   save();
   renderAll();
@@ -1660,6 +1843,9 @@ function renderAll() {
   renderCalendar();
   renderShopping();
   renderMembers();
+  ensureEventMemberSelection();
+  renderEventMemberMenu();
+  updateEventMemberLabel();
 }
 
 /* ============================================================
