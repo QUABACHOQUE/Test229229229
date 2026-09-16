@@ -8,7 +8,8 @@
   *{box-sizing:border-box}
   :root{
     --bg:#f2f4fa; --card:#fff; --text:#1e2330; --muted:#8b93a8;
-    --line:#e7eaf3; --accent:#6c5ce7; --accent-soft:#efecff;
+    --line:#e7eaf3; --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.12);
+    --accent-text:#ffffff;
     --danger:#ff5c5c; --radius:16px; --shadow:0 2px 12px rgba(30,40,80,.06);
   }
   html,body{height:100%}
@@ -37,7 +38,7 @@
     font:inherit;font-weight:700;font-size:15px;cursor:pointer;
     transition:.15s;margin-bottom:10px;text-align:center;
   }
-  .onb-btn.primary{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(108,92,231,.28)}
+  .onb-btn.primary{background:var(--accent);color:var(--accent-text);box-shadow:0 4px 14px rgba(108,92,231,.28)}
   .onb-btn.primary:hover{filter:brightness(1.08)}
   .onb-btn.secondary{background:#f0f2f9;color:var(--text)}
   .onb-btn.secondary:hover{background:#e6e9f4}
@@ -70,7 +71,7 @@
   .onb-error.show{display:block}
 
   .code-display{
-    background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;
+    background:var(--accent);color:var(--accent-text);
     border-radius:16px;padding:22px;margin:20px 0;
   }
   .code-display .lbl{font-size:12px;opacity:.85;font-weight:700;
@@ -91,12 +92,38 @@
   .family-screen-topbar{display:flex;align-items:center;gap:12px;margin-bottom:16px}
   .family-back-btn{
     display:inline-flex;align-items:center;gap:8px;
-    border:0;background:#fff;color:var(--text);cursor:pointer;
+    border:0;background:var(--card);color:var(--text);cursor:pointer;
     padding:10px 16px;border-radius:12px;font:inherit;font-weight:700;
     font-size:14px;box-shadow:var(--shadow);transition:.15s;
   }
   .family-back-btn:hover{background:#f7f8fd;transform:translateX(-2px)}
   .family-back-btn .arrow{color:var(--accent);font-size:16px}
+
+  .family-name-block{
+    display:flex;align-items:center;gap:10px;
+  }
+  .family-name-text{
+    flex:1;font-size:17px;font-weight:700;letter-spacing:-.3px;
+    word-break:break-word;
+  }
+  .family-name-input{
+    flex:1;font:inherit;font-size:16px;font-weight:700;
+    padding:8px 12px;border:1.5px solid var(--accent);border-radius:10px;
+    background:#fff;outline:none;color:var(--text);
+    box-shadow:0 0 0 3px var(--accent-soft);
+    min-width:0;
+  }
+
+  .theme-row{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:12px;padding:8px 0;
+  }
+  .theme-label{font-size:13.5px;color:var(--text);font-weight:500}
+  .theme-row input[type=color]{
+    width:52px;height:36px;padding:2px;
+    border:1px solid var(--line);border-radius:8px;
+    background:#f7f8fd;cursor:pointer;flex:0 0 auto;
+  }
 
   .emoji-picker{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:0 auto}
   .emoji-picker.small{gap:6px;justify-content:flex-start;margin:10px 0 0}
@@ -120,7 +147,7 @@
   .logo{font-size:20px;font-weight:800;letter-spacing:-.3px}
   .logo span{color:var(--accent)}
   .family-chip{
-    display:inline-flex;align-items:center;gap:8px;background:#fff;
+    display:inline-flex;align-items:center;gap:8px;background:var(--card);
     padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;
     box-shadow:var(--shadow);color:var(--text);
     border:0;cursor:pointer;font-family:inherit;transition:.15s;
@@ -133,7 +160,7 @@
   .today{font-size:13px;color:var(--muted);font-weight:500}
 
   .tabs{
-    display:flex;gap:6px;background:#fff;padding:6px;border-radius:14px;
+    display:flex;gap:6px;background:var(--card);padding:6px;border-radius:14px;
     box-shadow:var(--shadow);overflow-x:auto;margin-bottom:18px;
   }
   .tab{
@@ -142,7 +169,7 @@
     cursor:pointer;white-space:nowrap;transition:.15s;
   }
   .tab:hover{background:#f7f8fd;color:var(--text)}
-  .tab.active{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(108,92,231,.3)}
+  .tab.active{background:var(--accent);color:var(--accent-text);box-shadow:0 4px 12px rgba(108,92,231,.3)}
 
   .panel{display:none;animation:fade .22s ease}
   .panel.active{display:block}
@@ -166,7 +193,7 @@
 
   .btn{
     font:inherit;font-weight:600;border:0;border-radius:10px;padding:10px 18px;
-    background:var(--accent);color:#fff;cursor:pointer;transition:.15s;white-space:nowrap;
+    background:var(--accent);color:var(--accent-text);cursor:pointer;transition:.15s;white-space:nowrap;
   }
   .btn:hover{filter:brightness(1.08)}
   .btn:active{transform:scale(.98)}
@@ -236,7 +263,7 @@
     padding:12px;
     border:1px solid var(--line);
     border-radius:12px;
-    background:#fff;
+    background:var(--card);
     margin-top:2px;
   }
   .rp-header{
@@ -260,7 +287,7 @@
     aspect-ratio:1;
     border:1px solid var(--line);
     border-radius:8px;
-    background:#fff;
+    background:var(--card);
     font:inherit;font-size:13px;font-weight:500;
     cursor:pointer;transition:.12s;
     color:var(--text);
@@ -277,12 +304,12 @@
     font-weight:700;
   }
   .rp-day.selected{
-    background:var(--accent);color:#fff;border-color:var(--accent);
+    background:var(--accent);color:var(--accent-text);border-color:var(--accent);
     font-weight:700;
   }
   .rp-day.selected:hover{
-    background:#5b4bd6;
-    color:#fff;
+    filter:brightness(.9);
+    color:var(--accent-text);
   }
   .rp-actions{
     display:flex;gap:6px;justify-content:flex-end;margin-top:10px;
@@ -290,7 +317,7 @@
   .rp-btn{
     font:inherit;font-size:12px;font-weight:600;
     padding:6px 12px;border:1px solid var(--line);border-radius:6px;
-    background:#fff;color:var(--muted);cursor:pointer;transition:.12s;
+    background:var(--card);color:var(--muted);cursor:pointer;transition:.12s;
   }
   .rp-btn:hover{border-color:var(--accent);color:var(--accent)}
 
@@ -337,7 +364,7 @@
 
   .multiselect-menu{
     position:absolute;top:calc(100% + 4px);left:0;right:0;
-    background:#fff;border:1px solid var(--line);border-radius:10px;
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
     box-shadow:0 8px 24px rgba(30,40,80,.14);
     padding:5px;z-index:30;
     max-height:250px;overflow-y:auto;
@@ -375,7 +402,7 @@
 
   .list{display:flex;flex-direction:column;gap:8px}
   .item{
-    display:flex;align-items:flex-start;gap:12px;background:#fff;border-radius:14px;
+    display:flex;align-items:flex-start;gap:12px;background:var(--card);border-radius:14px;
     padding:13px 14px;box-shadow:var(--shadow);transition:.15s;
     border:1px solid transparent;
   }
@@ -406,7 +433,7 @@
   .chip.prio-high{background:#ffecec;color:#e5484d}
   .chip.prio-normal{background:#eef4ff;color:#2f6fed}
   .chip.prio-low{background:#eefaf3;color:#12a05c}
-  .chip.chip-family{background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff}
+  .chip.chip-family{background:var(--accent);color:var(--accent-text)}
   .chip.chip-duration{background:#fff4e6;color:#c47f17}
   .chip.chip-me{background:#eefaf3;color:#12a05c}
   .del{
@@ -430,7 +457,7 @@
   }
 
   .event-edit-card{
-    background:#fff;border-radius:14px;
+    background:var(--card);border-radius:14px;
     padding:14px;
     box-shadow:0 6px 22px rgba(108,92,231,.16);
     border:2px solid var(--accent);
@@ -456,7 +483,7 @@
   .ee-member{
     display:inline-flex;align-items:center;
     padding:6px 12px;border:1px solid var(--line);
-    border-radius:20px;background:#fff;
+    border-radius:20px;background:var(--card);
     font-size:13px;cursor:pointer;transition:.12s;
     user-select:none;color:var(--text);
     white-space:nowrap;
@@ -505,19 +532,48 @@
   .chips-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
   .chip-btn{
     font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);
-    background:#fff;color:var(--muted);padding:7px 14px;border-radius:20px;
+    background:var(--card);color:var(--muted);padding:7px 14px;border-radius:20px;
     cursor:pointer;transition:.15s;
   }
   .chip-btn:hover{border-color:#cfd5e8}
-  .chip-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .chip-btn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-text)}
 
-  #dayFilters{
-    margin-bottom:12px;
+  /* Вкладки списка покупок */
+  #shopTabs{
+    display:flex;gap:6px;overflow-x:auto;
+    padding-bottom:4px;margin-bottom:12px;
+    -webkit-overflow-scrolling:touch;
   }
+  #shopTabs::-webkit-scrollbar{height:0}
+  .shop-tab{
+    font:inherit;font-size:13px;font-weight:600;
+    border:1px solid var(--line);
+    background:var(--card);color:var(--muted);
+    padding:8px 14px;border-radius:20px;
+    cursor:pointer;transition:.15s;
+    display:inline-flex;align-items:center;gap:6px;
+    white-space:nowrap;flex:0 0 auto;
+  }
+  .shop-tab:hover{border-color:#cfd5e8}
+  .shop-tab.active{
+    background:var(--accent);border-color:var(--accent);
+    color:var(--accent-text);
+  }
+  .shop-tab-count{
+    font-size:11px;font-weight:700;
+    background:rgba(0,0,0,.08);
+    padding:1px 6px;border-radius:10px;
+  }
+  .shop-tab.active .shop-tab-count{
+    background:rgba(255,255,255,.25);
+    color:inherit;
+  }
+
+  #dayFilters{margin-bottom:12px}
   .day-filter-btn{
     font:inherit;font-size:12.5px;font-weight:600;
     border:1px solid var(--line);
-    background:#fff;color:var(--muted);
+    background:var(--card);color:var(--muted);
     padding:6px 12px;border-radius:20px;
     cursor:pointer;transition:.15s;
     display:inline-flex;align-items:center;gap:6px;
@@ -549,7 +605,7 @@
   .cal-nav{display:flex;gap:6px}
   .icon-btn{
     width:34px;height:34px;border-radius:10px;border:1px solid var(--line);
-    background:#fff;cursor:pointer;font-size:15px;color:var(--muted);
+    background:var(--card);cursor:pointer;font-size:15px;color:var(--muted);
     display:flex;align-items:center;justify-content:center;transition:.15s;
   }
   .icon-btn:hover{background:#f7f8fd;color:var(--text)}
@@ -573,7 +629,7 @@
   .day:hover{background:#f1f3fb}
   .day.blank{background:transparent;cursor:default;border:0}
   .day.today{border-color:var(--accent);background:var(--accent-soft)}
-  .day.selected{box-shadow:0 0 0 2px var(--accent);background:#fff}
+  .day.selected{box-shadow:0 0 0 2px var(--accent);background:var(--card)}
 
   .day-head{
     display:flex;align-items:center;justify-content:space-between;
@@ -634,10 +690,10 @@
   .progress-top{display:flex;justify-content:space-between;font-size:13px;
     font-weight:600;color:var(--muted);margin-bottom:7px}
   .progress-bar{height:8px;border-radius:20px;background:#e8ebf5;overflow:hidden}
-  .progress-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#6c5ce7,#a29bfe);transition:width .3s}
+  .progress-fill{height:100%;border-radius:20px;background:var(--accent);transition:width .3s}
 
   .member{
-    display:flex;align-items:flex-start;gap:14px;background:#fff;border-radius:14px;
+    display:flex;align-items:flex-start;gap:14px;background:var(--card);border-radius:14px;
     padding:13px 15px;box-shadow:var(--shadow);margin-bottom:8px;
   }
   .member-body{flex:1;min-width:0}
@@ -750,30 +806,68 @@
       </button>
     </div>
 
+    <!-- Название семьи -->
     <div class="card">
-      <p class="section-title">Наша семья</p>
+      <p class="section-title">Название семьи</p>
+      <div class="family-name-block" id="familyNameBlock"></div>
+    </div>
+
+    <!-- Цвета приложения -->
+    <div class="card">
+      <p class="section-title">Цвета приложения</p>
+
+      <div class="theme-row">
+        <span class="theme-label">Акцент (кнопки, ссылки)</span>
+        <input type="color" id="themeAccent" value="#6c5ce7">
+      </div>
+      <div class="theme-row">
+        <span class="theme-label">Фон приложения</span>
+        <input type="color" id="themeBg" value="#f2f4fa">
+      </div>
+      <div class="theme-row">
+        <span class="theme-label">Фон карточек</span>
+        <input type="color" id="themeCard" value="#ffffff">
+      </div>
+
+      <button class="btn ghost" id="resetThemeBtn" style="margin-top:12px;width:100%">Сбросить цвета</button>
+    </div>
+
+    <!-- Код для приглашения -->
+    <div class="card">
+      <p class="section-title">Код для приглашения</p>
       <div class="family-info">
         <div class="family-row">
-          <span class="lbl">Код для приглашения</span>
           <span class="family-code-big" id="showFamilyCode">——————</span>
-        </div>
-        <div class="family-row">
-          <button class="btn ghost" id="copyFamilyCode">📋 Скопировать код</button>
-          <button class="btn ghost" id="leaveBtn">🚪 Выйти из семьи</button>
+          <button class="btn ghost" id="copyFamilyCode">📋 Скопировать</button>
         </div>
       </div>
     </div>
 
-    <div class="list" id="memberList"></div>
+    <!-- Участники -->
+    <div class="list" id="memberList" style="margin-bottom:14px"></div>
 
-    <div class="card" style="margin-top:14px">
-      <p class="section-title">Добавить члена без Telegram</p>
+    <!-- Кнопка добавления члена -->
+    <button type="button" class="add-open" id="addMemberOpenBtn">
+      <span class="plus">+</span>
+      <span>Добавить члена без ТГ</span>
+    </button>
+
+    <!-- Форма добавления (скрыта) -->
+    <div class="add-form-wrap" id="addMemberFormWrap" style="display:none">
       <div class="add-form">
         <input type="text" id="memberName" class="grow" placeholder="Имя" maxlength="20">
         <input type="color" id="memberColor" value="#6c5ce7">
-        <button class="btn" id="addMemberBtn">Добавить</button>
       </div>
-      <div class="emoji-picker small" id="memberEmojiPicker" style="margin-top:12px"></div>
+      <div class="emoji-picker small" id="memberEmojiPicker" style="margin-top:10px"></div>
+      <div class="add-form-actions">
+        <button type="button" class="btn ghost" id="addMemberCancelBtn">Отмена</button>
+        <button type="button" class="btn" id="addMemberBtn">Добавить</button>
+      </div>
+    </div>
+
+    <!-- Опасная зона -->
+    <div style="margin-top:14px">
+      <button class="btn ghost" id="leaveBtn" style="width:100%">🚪 Выйти из семьи</button>
     </div>
   </div>
 </div>
@@ -895,6 +989,7 @@
 
   <section class="panel" id="panel-shopping">
     <div class="card">
+      <div id="shopTabs"></div>
       <div class="add-form">
         <input type="text" id="shopInput" class="grow" placeholder="Что купить?">
         <button class="btn" id="addShopBtn">Добавить</button>
@@ -943,41 +1038,113 @@ const LS_DEVICE   = 'familyhub.deviceId';
 const LS_LOCAL    = 'familyhub.localState';
 const LS_MY_NAME  = 'familyhub.myName';
 const LS_MY_EMOJI = 'familyhub.myEmoji';
+const LS_SHOP_TAB = 'familyhub.shopTab';
 const uid = () => Math.random().toString(36).slice(2, 10);
 const $ = id => document.getElementById(id);
 
 /* ============================================================
    HAPTIC FEEDBACK
-   Используем нативный Telegram HapticFeedback + fallback
-   на navigator.vibrate для Android, где нативный API молчит.
    ============================================================ */
 function tgHaptic() {
   return window.Telegram?.WebApp?.HapticFeedback || null;
 }
 function nativeVibrate(pattern) {
-  try {
-    if (navigator.vibrate) navigator.vibrate(pattern);
-  } catch (_) {}
+  try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (_) {}
 }
-/* Лёгкий тап — для чекбоксов выполнено/куплено */
 function hapticTap() {
   const h = tgHaptic();
   if (h) { try { h.impactOccurred('light'); } catch(_) {} }
   nativeVibrate(10);
 }
-/* Подтверждение — после успешного добавления */
 function hapticSuccess() {
   const h = tgHaptic();
   if (h) { try { h.notificationOccurred('success'); } catch(_) {} }
   nativeVibrate([15, 30, 15]);
 }
-/* Удаление — чуть ощутимее обычного тапа */
 function hapticDelete() {
   const h = tgHaptic();
   if (h) { try { h.impactOccurred('medium'); } catch(_) {} }
   nativeVibrate(25);
 }
 
+/* ============================================================
+   ТЕМА
+   ============================================================ */
+const DEFAULT_THEME = {
+  accent: '#6c5ce7',
+  bg: '#f2f4fa',
+  card: '#ffffff'
+};
+
+function hexToRgba(hex, alpha) {
+  const h = String(hex || '').replace('#', '');
+  if (h.length !== 6) return `rgba(108,92,231,${alpha})`;
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function contrastText(hex) {
+  const h = String(hex || '').replace('#', '');
+  if (h.length !== 6) return '#ffffff';
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return lum > 0.65 ? '#1e2330' : '#ffffff';
+}
+
+function applyTheme() {
+  const t = state.theme || {};
+  const accent = t.accent || DEFAULT_THEME.accent;
+  const bg = t.bg || DEFAULT_THEME.bg;
+  const card = t.card || DEFAULT_THEME.card;
+  const root = document.documentElement.style;
+  root.setProperty('--accent', accent);
+  root.setProperty('--bg', bg);
+  root.setProperty('--card', card);
+  root.setProperty('--accent-soft', hexToRgba(accent, 0.12));
+  root.setProperty('--accent-text', contrastText(accent));
+}
+
+function syncThemeInputs() {
+  const t = state.theme || {};
+  const a = $('themeAccent'); if (a) a.value = t.accent || DEFAULT_THEME.accent;
+  const b = $('themeBg'); if (b) b.value = t.bg || DEFAULT_THEME.bg;
+  const c = $('themeCard'); if (c) c.value = t.card || DEFAULT_THEME.card;
+}
+
+function initThemeHandlers() {
+  const ids = ['themeAccent', 'themeBg', 'themeCard'];
+  ids.forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      state.theme = {
+        accent: $('themeAccent').value,
+        bg: $('themeBg').value,
+        card: $('themeCard').value
+      };
+      applyTheme();
+      save();
+    });
+  });
+  const resetBtn = $('resetThemeBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      state.theme = { ...DEFAULT_THEME };
+      syncThemeInputs();
+      applyTheme();
+      save();
+      toast('Цвета сброшены');
+    });
+  }
+}
+
+/* ============================================================
+   ОБЩИЕ УТИЛИТЫ
+   ============================================================ */
 function iso(d) {
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
@@ -1059,7 +1226,14 @@ function getCurrentUser() {
 const currentUser = getCurrentUser();
 
 function defaultState() {
-  return { name: 'Моя семья', members: [], tasks: [], events: [], shopping: [] };
+  return {
+    name: 'Моя семья',
+    members: [],
+    tasks: [],
+    events: [],
+    shopping: [],
+    theme: { ...DEFAULT_THEME }
+  };
 }
 let state = defaultState();
 let session = null;
@@ -1077,6 +1251,8 @@ let regularDays = new Set();
 
 let eventDayFilter = new Set();
 let eventDayFilterKnown = new Set();
+
+let activeShopTab = localStorage.getItem(LS_SHOP_TAB) || null;
 
 try {
   session = JSON.parse(localStorage.getItem(LS_SESSION) || 'null');
@@ -1123,6 +1299,7 @@ async function createFamily(familyName, password, myName, myEmoji) {
       id: currentUser.id, name: displayName, photo: currentUser.photo, emoji, color,
       isTelegramUser: !!currentUser.photo || currentUser.id.length > 12
     }],
+    theme: { ...DEFAULT_THEME },
     createdAt: Date.now()
   };
   if (db) {
@@ -1183,7 +1360,9 @@ async function attachToFamily() {
       if (!snap.exists()) return;
       applyingRemote = true;
       state = { ...defaultState(), ...snap.data() };
+      if (!state.theme) state.theme = { ...DEFAULT_THEME };
       $('familyName').textContent = state.name || 'Семья';
+      applyTheme();
       renderAll();
       setOnline(true);
       setTimeout(() => { applyingRemote = false; }, 400);
@@ -1193,7 +1372,9 @@ async function attachToFamily() {
     });
   } else {
     state = { ...defaultState(), ...(localLoad(session.docId) || {}) };
+    if (!state.theme) state.theme = { ...DEFAULT_THEME };
     $('familyName').textContent = state.name || 'Семья';
+    applyTheme();
     renderAll();
     setOnline(true);
   }
@@ -1228,9 +1409,64 @@ function leaveFamily() {
   location.reload();
 }
 
+/* ============================================================
+   ЭКРАН СЕМЬИ
+   ============================================================ */
+function renderFamilyNameBlock() {
+  const block = $('familyNameBlock');
+  if (!block) return;
+  block.innerHTML = `
+    <span class="family-name-text">${esc(state.name || 'Моя семья')}</span>
+    <button type="button" class="edit-name-btn" id="editFamilyNameBtn" title="Изменить название">✏️</button>
+  `;
+  $('editFamilyNameBtn').addEventListener('click', startEditFamilyName);
+}
+
+function startEditFamilyName() {
+  const block = $('familyNameBlock');
+  if (!block) return;
+  const oldName = state.name || 'Моя семья';
+  block.innerHTML = `
+    <input type="text" class="family-name-input" id="familyNameInput"
+           value="${esc(oldName)}" maxlength="40" autocomplete="off">
+    <button type="button" class="save-btn" id="saveFamilyNameBtn" title="Сохранить">✓</button>
+    <button type="button" class="cancel-btn" id="cancelFamilyNameBtn" title="Отмена">✕</button>
+  `;
+  const input = $('familyNameInput');
+  input.focus();
+  input.select();
+
+  let finished = false;
+  const commit = () => {
+    if (finished) return;
+    finished = true;
+    const newName = input.value.trim() || 'Моя семья';
+    if (newName !== oldName) {
+      state.name = newName;
+      $('familyName').textContent = newName;
+      save();
+      toast('Название обновлено');
+    }
+    renderFamilyNameBlock();
+  };
+  const cancel = () => {
+    if (finished) return;
+    finished = true;
+    renderFamilyNameBlock();
+  };
+  $('saveFamilyNameBtn').addEventListener('click', commit);
+  $('cancelFamilyNameBtn').addEventListener('click', cancel);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+  });
+}
+
 function openFamilyScreen() {
   $('familyScreen').style.display = 'block';
   document.body.style.overflow = 'hidden';
+  renderFamilyNameBlock();
+  syncThemeInputs();
   renderMembers();
 }
 function closeFamilyScreen() {
@@ -1245,6 +1481,9 @@ document.addEventListener('keydown', e => {
   }
 });
 
+/* ============================================================
+   ОНБОРДИНГ
+   ============================================================ */
 function showOnbScreen(id) {
   ['onb-choose', 'onb-create', 'onb-created', 'onb-join'].forEach(s => {
     $(s).style.display = s === id ? '' : 'none';
@@ -1252,6 +1491,7 @@ function showOnbScreen(id) {
 }
 buildEmojiPicker($('createEmojiPicker'), getSavedMyEmoji());
 buildEmojiPicker($('joinEmojiPicker'), getSavedMyEmoji());
+buildEmojiPicker($('memberEmojiPicker'), DEFAULT_EMOJI);
 
 (function prefillNames() {
   const saved = getSavedMyName();
@@ -1339,7 +1579,7 @@ const MONTHS = ['Январь','Февраль','Март','Апрель','Ма�
                 'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const DOW = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 const PRIO_LABEL = { high: 'Срочно', normal: 'Обычное', low: 'Не срочно' };
-const FAMILY_GRAD = 'linear-gradient(135deg,#6c5ce7,#a29bfe)';
+const FAMILY_GRAD = 'var(--accent)';
 
 function memberById(id) { return state.members.find(m => m.id === id); }
 function isMe(id) { return id === currentUser.id; }
@@ -1415,18 +1655,17 @@ function isFamilyEvent(e) {
 
 function primaryEventColor(e) {
   const ids = getEventMemberIds(e);
-  if (ids.length === 0) return '#6c5ce7';
-  if (isFamilyEvent(e)) return FAMILY_GRAD;
+  if (ids.length === 0) return 'var(--accent)';
+  if (isFamilyEvent(e)) return 'var(--accent)';
   const m = memberById(ids[0]);
-  return m ? m.color : '#6c5ce7';
+  return m ? m.color : 'var(--accent)';
 }
 
 /* ============================================================
-   ФИЛЬТР СОБЫТИЙ ДНЯ
+   ФИЛЬТР ДНЯ
    ============================================================ */
 function syncEventDayFilter() {
   const memberIds = new Set(state.members.map(m => m.id));
-
   for (const id of Array.from(eventDayFilter)) {
     if (!memberIds.has(id)) eventDayFilter.delete(id);
   }
@@ -1444,19 +1683,17 @@ function syncEventDayFilter() {
 function renderDayFilters() {
   const wrap = $('dayFilters');
   if (!wrap) return;
-
   if (!state.members.length) {
     wrap.innerHTML = '';
     wrap.style.display = 'none';
     return;
   }
   wrap.style.display = '';
-
   wrap.innerHTML = state.members.map(m => {
     const active = eventDayFilter.has(m.id);
     return `<button type="button" class="day-filter-btn ${active ? 'active' : ''}" data-fid="${m.id}">
       <span class="day-filter-check"></span>
-      <span>${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}${isMe(m.id) ? ' · я' : ''}</span>
+      <span>${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}</span>
     </button>`;
   }).join('');
 }
@@ -1465,11 +1702,8 @@ $('dayFilters').addEventListener('click', e => {
   const btn = e.target.closest('[data-fid]');
   if (!btn) return;
   const id = btn.dataset.fid;
-  if (eventDayFilter.has(id)) {
-    eventDayFilter.delete(id);
-  } else {
-    eventDayFilter.add(id);
-  }
+  if (eventDayFilter.has(id)) eventDayFilter.delete(id);
+  else eventDayFilter.add(id);
   renderDayEvents();
 });
 
@@ -1497,7 +1731,7 @@ function renderEventMemberMenu() {
         <input type="checkbox" data-mid="${m.id}" ${checked ? 'checked' : ''}>
         <span class="multiselect-check"></span>
         <span class="multiselect-emoji">${esc(m.emoji || DEFAULT_EMOJI)}</span>
-        <span>${esc(m.name)}${isMe(m.id) ? ' · я' : ''}</span>
+        <span>${esc(m.name)}</span>
       </label>
     `;
   });
@@ -1529,13 +1763,9 @@ function updateEventMemberLabel() {
 
 function initEventMemberSelect() {
   const selfInMembers = state.members.some(m => m.id === currentUser.id);
-  if (selfInMembers) {
-    selectedEventMembers = [currentUser.id];
-  } else if (state.members[0]) {
-    selectedEventMembers = [state.members[0].id];
-  } else {
-    selectedEventMembers = [];
-  }
+  if (selfInMembers) selectedEventMembers = [currentUser.id];
+  else if (state.members[0]) selectedEventMembers = [state.members[0].id];
+  else selectedEventMembers = [];
   renderEventMemberMenu();
   updateEventMemberLabel();
 }
@@ -1550,21 +1780,16 @@ $('eventMemberTrigger').addEventListener('click', e => {
   e.stopPropagation();
   $('eventMemberSelect').classList.toggle('open');
 });
-
 document.addEventListener('click', e => {
   if (!$('eventMemberSelect').contains(e.target)) {
     $('eventMemberSelect').classList.remove('open');
   }
 });
-
 $('eventMemberMenu').addEventListener('change', e => {
   const input = e.target;
   if (input.dataset.all !== undefined) {
-    if (input.checked) {
-      selectedEventMembers = state.members.map(m => m.id);
-    } else {
-      selectedEventMembers = [];
-    }
+    if (input.checked) selectedEventMembers = state.members.map(m => m.id);
+    else selectedEventMembers = [];
   } else if (input.dataset.mid) {
     const id = input.dataset.mid;
     if (input.checked) {
@@ -1585,22 +1810,16 @@ function renderRegularPicker() {
   const title = $('rpMonthTitle');
   const count = $('rpCount');
   if (!grid) return;
-
   if (title) title.textContent = MONTHS[calMonth] + ' ' + calYear;
   if (count) {
     const n = regularDays.size;
-    count.textContent = n === 0 ? 'Ничего не выбрано'
-                      : n === 1 ? '1 день'
-                      : `${n} дн.`;
+    count.textContent = n === 0 ? 'Ничего не выбрано' : n === 1 ? '1 день' : `${n} дн.`;
   }
-
   const first = new Date(calYear, calMonth, 1);
   const startOffset = (first.getDay() + 6) % 7;
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-
   let html = DOW.map(d => `<div class="rp-dow">${d}</div>`).join('');
   for (let i = 0; i < startOffset; i++) html += `<div class="rp-blank"></div>`;
-
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     const selected = regularDays.has(dateStr);
@@ -1610,22 +1829,16 @@ function renderRegularPicker() {
     if (isToday) cls.push('today');
     html += `<button type="button" class="${cls.join(' ')}" data-rp-date="${dateStr}">${d}</button>`;
   }
-
   grid.innerHTML = html;
 }
-
 $('rpGrid').addEventListener('click', e => {
   const btn = e.target.closest('[data-rp-date]');
   if (!btn) return;
   const dateStr = btn.dataset.rpDate;
-  if (regularDays.has(dateStr)) {
-    regularDays.delete(dateStr);
-  } else {
-    regularDays.add(dateStr);
-  }
+  if (regularDays.has(dateStr)) regularDays.delete(dateStr);
+  else regularDays.add(dateStr);
   renderRegularPicker();
 });
-
 $('rpSelectAll').addEventListener('click', () => {
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
   for (let d = 1; d <= daysInMonth; d++) {
@@ -1634,19 +1847,15 @@ $('rpSelectAll').addEventListener('click', () => {
   }
   renderRegularPicker();
 });
-
 $('rpClear').addEventListener('click', () => {
   regularDays.clear();
   renderRegularPicker();
 });
-
 $('regularToggleBtn').addEventListener('click', () => {
   regularMode = !regularMode;
   $('regularToggleBtn').classList.toggle('active', regularMode);
   if (regularMode) {
-    if (regularDays.size === 0 && selectedDate) {
-      regularDays.add(selectedDate);
-    }
+    if (regularDays.size === 0 && selectedDate) regularDays.add(selectedDate);
     $('regularPicker').style.display = '';
     renderRegularPicker();
   } else {
@@ -1661,12 +1870,8 @@ $('regularToggleBtn').addEventListener('click', () => {
 function openTaskForm() {
   $('addTaskOpenBtn').style.display = 'none';
   $('addTaskFormWrap').style.display = '';
-  setTimeout(() => {
-    const el = $('taskTitle');
-    if (el) el.focus();
-  }, 60);
+  setTimeout(() => { const el = $('taskTitle'); if (el) el.focus(); }, 60);
 }
-
 function closeTaskForm() {
   $('addTaskFormWrap').style.display = 'none';
   $('addTaskOpenBtn').style.display = '';
@@ -1674,7 +1879,6 @@ function closeTaskForm() {
   $('taskDue').value = '';
   $('taskPriority').value = 'normal';
 }
-
 $('addTaskOpenBtn').addEventListener('click', openTaskForm);
 $('addTaskCancelBtn').addEventListener('click', closeTaskForm);
 
@@ -1689,12 +1893,8 @@ function openAddEventForm() {
   $('regularToggleBtn').classList.remove('active');
   $('regularPicker').style.display = 'none';
   initEventMemberSelect();
-  setTimeout(() => {
-    const el = $('eventTitle');
-    if (el) el.focus();
-  }, 60);
+  setTimeout(() => { const el = $('eventTitle'); if (el) el.focus(); }, 60);
 }
-
 function closeAddEventForm() {
   $('addEventFormWrap').style.display = 'none';
   $('addEventOpenBtn').style.display = '';
@@ -1707,9 +1907,33 @@ function closeAddEventForm() {
   $('regularToggleBtn').classList.remove('active');
   $('regularPicker').style.display = 'none';
 }
-
 $('addEventOpenBtn').addEventListener('click', openAddEventForm);
 $('addEventCancelBtn').addEventListener('click', closeAddEventForm);
+
+/* ============================================================
+   ФОРМА ЧЛЕНА БЕЗ ТГ
+   ============================================================ */
+function openAddMemberForm() {
+  $('addMemberOpenBtn').style.display = 'none';
+  $('addMemberFormWrap').style.display = '';
+  setTimeout(() => { const el = $('memberName'); if (el) el.focus(); }, 60);
+}
+function closeAddMemberForm() {
+  $('addMemberFormWrap').style.display = 'none';
+  $('addMemberOpenBtn').style.display = '';
+  $('memberName').value = '';
+  $('memberColor').value = '#6c5ce7';
+  // reset emoji picker to default
+  const container = $('memberEmojiPicker');
+  if (container) {
+    container.dataset.selected = DEFAULT_EMOJI;
+    container.querySelectorAll('.emoji-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.emoji === DEFAULT_EMOJI);
+    });
+  }
+}
+$('addMemberOpenBtn').addEventListener('click', openAddMemberForm);
+$('addMemberCancelBtn').addEventListener('click', closeAddMemberForm);
 
 /* ============================================================
    МИНИ-ГАНТ
@@ -1722,7 +1946,6 @@ function timeToPct(hhmm) {
   const total = Math.max(0, Math.min(24, h + m / 60));
   return (total / 24) * 100;
 }
-
 function timeToMin(hhmm) {
   if (!hhmm) return 0;
   const parts = String(hhmm).split(':');
@@ -1730,7 +1953,6 @@ function timeToMin(hhmm) {
   const m = parseInt(parts[1], 10) || 0;
   return h * 60 + m;
 }
-
 function renderEventBar(e, color) {
   if (!e.time && !e.endTime) {
     return `<div class="gantt-event gantt-event-allday" style="background:${color}"></div>`;
@@ -1748,11 +1970,9 @@ function renderEventBar(e, color) {
   if (right <= left) right = left + (100 / 24);
   return `<div class="gantt-event" style="left:${left}%;width:${right - left}%;background:${color}"></div>`;
 }
-
 function computeOverlaps(events) {
   const timed = events.filter(e => e.time && e.endTime);
   if (timed.length < 2) return [];
-
   const raw = [];
   for (let i = 0; i < timed.length; i++) {
     for (let j = i + 1; j < timed.length; j++) {
@@ -1764,54 +1984,40 @@ function computeOverlaps(events) {
     }
   }
   if (!raw.length) return [];
-
   raw.sort((a, b) => a[0] - b[0]);
   const merged = [];
   for (const [s, e] of raw) {
     const last = merged[merged.length - 1];
-    if (last && last[1] >= s) {
-      last[1] = Math.max(last[1], e);
-    } else {
-      merged.push([s, e]);
-    }
+    if (last && last[1] >= s) last[1] = Math.max(last[1], e);
+    else merged.push([s, e]);
   }
   return merged;
 }
-
 function renderMemberRow(evs, color) {
   let html = `<div class="gantt-row">`;
   evs.forEach(e => { html += renderEventBar(e, color); });
-
   const overlaps = computeOverlaps(evs);
   overlaps.forEach(([s, e]) => {
     const left = (s / (24 * 60)) * 100;
     const width = ((e - s) / (24 * 60)) * 100;
     html += `<div class="gantt-event-overlap" style="left:${left}%;width:${width}%"></div>`;
   });
-
   html += `</div>`;
   return html;
 }
-
 function buildDayGantt(evs) {
   if (!state.members.length && !evs.length) return '';
-
   const byMember = {};
   state.members.forEach(m => { byMember[m.id] = []; });
-
   evs.forEach(e => {
     const ids = getEventMemberIds(e);
-    ids.forEach(id => {
-      if (byMember[id]) byMember[id].push(e);
-    });
+    ids.forEach(id => { if (byMember[id]) byMember[id].push(e); });
   });
-
   let html = '';
   state.members.forEach(m => {
     const memberEvs = byMember[m.id] || [];
-    html += renderMemberRow(memberEvs, m.color || '#6c5ce7');
+    html += renderMemberRow(memberEvs, m.color || 'var(--accent)');
   });
-
   return html;
 }
 
@@ -1879,8 +2085,7 @@ function renderTasks() {
     const overdue = t.due && !t.done && t.due < TODAY;
     const chips = [];
     if (m) {
-      const meClass = isMe(m.id) ? 'chip-me' : '';
-      chips.push(`<span class="chip ${meClass}" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}${isMe(m.id) ? ' · это я' : ''}</span>`);
+      chips.push(`<span class="chip" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}</span>`);
     }
     if (t.due) chips.push(`<span class="chip ${overdue ? 'overdue' : ''}">📅 ${fmtDate(t.due)}${overdue ? ' · просрочено' : ''}</span>`);
     if (t.priority && t.priority !== 'normal') chips.push(`<span class="chip prio-${t.priority}">${PRIO_LABEL[t.priority]}</span>`);
@@ -1973,29 +2178,22 @@ attachSmartTime($('eventTimeEnd'));
 
 function renderCalendar() {
   $('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
-
   $('calGrid').style.setProperty('--members', state.members.length || 1);
-
   const first = new Date(calYear, calMonth, 1);
   const startOffset = (first.getDay() + 6) % 7;
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-
   let html = DOW.map(d => `<div class="dow">${d}</div>`).join('');
   for (let i = 0; i < startOffset; i++) html += `<div class="day blank"></div>`;
-
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     const evs = state.events
       .filter(e => e.date === dateStr)
       .sort((a, b) => eventSortKey(a).localeCompare(eventSortKey(b)));
-
     const cls = ['day'];
     if (dateStr === TODAY) cls.push('today');
     if (dateStr === selectedDate) cls.push('selected');
-
     const hasAllDay = evs.some(e => !e.time && !e.endTime);
     const gantt = buildDayGantt(evs);
-
     html += `<div class="${cls.join(' ')}" data-date="${dateStr}">
       <div class="day-head">
         <span class="num">${d}</span>
@@ -2004,10 +2202,8 @@ function renderCalendar() {
       <div class="day-gantt">${gantt}</div>
     </div>`;
   }
-
   $('calGrid').innerHTML = html;
   renderDayEvents();
-
   if (regularMode) renderRegularPicker();
 }
 
@@ -2022,7 +2218,7 @@ $('calGrid').addEventListener('click', e => {
 });
 
 /* ============================================================
-   ОТОБРАЖЕНИЕ СОБЫТИЙ ДНЯ
+   СОБЫТИЯ ДНЯ
    ============================================================ */
 function renderEventView(e) {
   const bg = primaryEventColor(e);
@@ -2046,8 +2242,7 @@ function renderEventView(e) {
     ids.forEach(id => {
       const m = memberById(id);
       if (!m) return;
-      const meClass = isMe(m.id) ? 'chip-me' : '';
-      chips.push(`<span class="chip ${meClass}" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}${isMe(m.id) ? ' · это я' : ''}</span>`);
+      chips.push(`<span class="chip" style="background:${m.color}1f;color:${m.color}">${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}</span>`);
     });
   }
 
@@ -2072,17 +2267,12 @@ function renderEventEditForm(e) {
     const checked = ids.includes(m.id);
     return `<label class="ee-member ${checked ? 'checked' : ''}">
       <input type="checkbox" data-mid="${m.id}" ${checked ? 'checked' : ''}>
-      <span>${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}${isMe(m.id) ? ' · я' : ''}</span>
+      <span>${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}</span>
     </label>`;
   }).join('');
-
   return `<div class="event-edit-card" data-id="${e.id}">
-    <div class="ee-header">
-      <span>✏️ Редактирование</span>
-    </div>
-
+    <div class="ee-header"><span>✏️ Редактирование</span></div>
     <input type="text" class="ee-title-input" value="${esc(e.title)}" maxlength="100" placeholder="Название события" autocomplete="off">
-
     <div class="ee-time-row">
       <div class="time-range">
         <span class="time-label">с</span>
@@ -2096,9 +2286,7 @@ function renderEventEditForm(e) {
                value="${esc(e.endTime || '')}">
       </div>
     </div>
-
     ${state.members.length ? `<div class="ee-members">${membersHtml}</div>` : ''}
-
     <div class="ee-actions">
       <button type="button" class="btn ghost" data-ee-action="cancel">Отмена</button>
       <button type="button" class="btn" data-ee-action="save">Сохранить</button>
@@ -2111,9 +2299,7 @@ function renderDayEvents() {
   $('dayTitle').textContent = d.toLocaleDateString('ru-RU', {
     day: 'numeric', month: 'long', weekday: 'long'
   });
-
   renderDayFilters();
-
   const evs = state.events
     .filter(e => e.date === selectedDate)
     .filter(e => {
@@ -2123,34 +2309,24 @@ function renderDayEvents() {
     })
     .sort((a, b) => eventSortKey(a).localeCompare(eventSortKey(b)));
 
-  if (editingEventId && !evs.some(e => e.id === editingEventId)) {
-    editingEventId = null;
-  }
-  if (activeEventId && !evs.some(e => e.id === activeEventId)) {
-    activeEventId = null;
-  }
+  if (editingEventId && !evs.some(e => e.id === editingEventId)) editingEventId = null;
+  if (activeEventId && !evs.some(e => e.id === activeEventId)) activeEventId = null;
 
   const list = $('eventList');
   if (!evs.length) {
     list.innerHTML = `<div class="empty" style="padding:18px"><span class="big">🗓️</span>На этот день ничего не запланировано</div>`;
     return;
   }
-
   list.innerHTML = evs.map(e => {
     if (editingEventId === e.id) return renderEventEditForm(e);
     return renderEventView(e);
   }).join('');
-
   if (editingEventId) attachEventEditHandlers();
 }
 
-/* ============================================================
-   ФОРМА РЕДАКТИРОВАНИЯ — ОБРАБОТЧИКИ
-   ============================================================ */
 function attachEventEditHandlers() {
   const card = $('eventList').querySelector('.event-edit-card');
   if (!card) return;
-
   const id = card.dataset.id;
   const titleInput = card.querySelector('.ee-title-input');
   const timeInput = card.querySelector('.ee-time-input');
@@ -2175,25 +2351,20 @@ function attachEventEditHandlers() {
   const doSave = () => {
     const ev = state.events.find(x => x.id === id);
     if (!ev) return;
-
     const newTitle = titleInput.value.trim();
     if (!newTitle) { titleInput.focus(); return; }
-
     let s = formatTimeInput(timeInput.value);
     let en = formatTimeInput(endInput.value);
     if (s && en && en < s) { const t = s; s = en; en = t; }
-
     const newIds = [];
     card.querySelectorAll('input[type=checkbox][data-mid]').forEach(cb => {
       if (cb.checked) newIds.push(cb.dataset.mid);
     });
-
     ev.title = newTitle;
     ev.time = s;
     ev.endTime = en;
     ev.memberIds = newIds;
     if (ev.memberId !== undefined) delete ev.memberId;
-
     editingEventId = null;
     activeEventId = null;
     save();
@@ -2201,20 +2372,17 @@ function attachEventEditHandlers() {
     hapticSuccess();
     toast('Событие обновлено');
   };
-
   const doCancel = () => {
     editingEventId = null;
     activeEventId = null;
     renderDayEvents();
   };
-
   card.addEventListener('click', e => {
     const action = e.target.closest('[data-ee-action]');
     if (!action) return;
     if (action.dataset.eeAction === 'save') doSave();
     if (action.dataset.eeAction === 'cancel') doCancel();
   });
-
   [titleInput, timeInput, endInput].forEach(inp => {
     if (!inp) return;
     inp.addEventListener('keydown', e => {
@@ -2222,19 +2390,13 @@ function attachEventEditHandlers() {
       if (e.key === 'Escape') { e.preventDefault(); doCancel(); }
     });
   });
-
   titleInput.focus();
 }
 
-/* ============================================================
-   КЛИКИ ПО СПИСКУ СОБЫТИЙ
-   ============================================================ */
 $('eventList').addEventListener('click', e => {
   if (e.target.closest('.event-edit-card')) return;
-
   const row = e.target.closest('.item');
   if (!row) return;
-
   const id = row.dataset.id;
 
   if (e.target.closest('[data-action="del"]')) {
@@ -2247,7 +2409,6 @@ $('eventList').addEventListener('click', e => {
     renderCalendar();
     return;
   }
-
   if (e.target.closest('[data-action="edit"]')) {
     e.stopPropagation();
     editingEventId = id;
@@ -2256,13 +2417,9 @@ $('eventList').addEventListener('click', e => {
     renderDayEvents();
     return;
   }
-
   e.stopPropagation();
-  if (activeEventId === id) {
-    activeEventId = null;
-  } else {
-    activeEventId = id;
-  }
+  if (activeEventId === id) activeEventId = null;
+  else activeEventId = id;
   renderDayEvents();
 });
 
@@ -2279,38 +2436,24 @@ $('eventTitle').addEventListener('keydown', e => { if (e.key === 'Enter') addEve
 function addEvent() {
   const title = $('eventTitle').value.trim();
   if (!title) { $('eventTitle').focus(); return; }
-
   $('eventTime').value = formatTimeInput($('eventTime').value);
   $('eventTimeEnd').value = formatTimeInput($('eventTimeEnd').value);
   normalizeTimeRange();
-
   const start = $('eventTime').value || '';
   const end = $('eventTimeEnd').value || '';
   const memberIds = selectedEventMembers.slice();
 
   if (regularMode) {
-    if (regularDays.size === 0) {
-      toast('Выберите хотя бы один день');
-      return;
-    }
+    if (regularDays.size === 0) { toast('Выберите хотя бы один день'); return; }
     const days = Array.from(regularDays).sort();
     days.forEach(dateStr => {
-      state.events.push({
-        id: uid(), title, date: dateStr,
-        time: start, endTime: end,
-        memberIds
-      });
+      state.events.push({ id: uid(), title, date: dateStr, time: start, endTime: end, memberIds });
     });
     toast(days.length === 1 ? 'Событие добавлено' : `Событие добавлено на ${days.length} дн.`);
   } else {
-    state.events.push({
-      id: uid(), title, date: selectedDate,
-      time: start, endTime: end,
-      memberIds
-    });
+    state.events.push({ id: uid(), title, date: selectedDate, time: start, endTime: end, memberIds });
     toast('Событие добавлено');
   }
-
   editingEventId = null;
   activeEventId = null;
   save();
@@ -2320,42 +2463,117 @@ function addEvent() {
 }
 
 /* ============================================================
-   ПОКУПКИ
+   ПОКУПКИ — ВКЛАДКИ ПО УЧАСТНИКАМ
    ============================================================ */
+function getShoppingOwner(item) {
+  if (item.ownerId) return item.ownerId;
+  return state.members[0]?.id || null;
+}
+
+function renderShopTabs() {
+  const wrap = $('shopTabs');
+  if (!wrap) return;
+  if (!state.members.length) {
+    wrap.innerHTML = '';
+    return;
+  }
+  // если активная вкладка не существует — ставим первого
+  if (!state.members.some(m => m.id === activeShopTab)) {
+    activeShopTab = state.members[0].id;
+    localStorage.setItem(LS_SHOP_TAB, activeShopTab);
+  }
+
+  wrap.innerHTML = state.members.map(m => {
+    const count = state.shopping.filter(i => getShoppingOwner(i) === m.id && !i.done).length;
+    const active = activeShopTab === m.id;
+    return `<button type="button" class="shop-tab ${active ? 'active' : ''}" data-sid="${m.id}">
+      <span>${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}</span>
+      ${count > 0 ? `<span class="shop-tab-count">${count}</span>` : ''}
+    </button>`;
+  }).join('');
+}
+
+$('shopTabs').addEventListener('click', e => {
+  const btn = e.target.closest('[data-sid]');
+  if (!btn) return;
+  activeShopTab = btn.dataset.sid;
+  localStorage.setItem(LS_SHOP_TAB, activeShopTab);
+  renderShopping();
+});
+
 function renderShopping() {
-  const total = state.shopping.length;
-  const bought = state.shopping.filter(i => i.done).length;
+  renderShopTabs();
+
+  const list = $('shopList');
+  const progressWrap = $('shopProgress');
+
+  if (!state.members.length) {
+    if (progressWrap) progressWrap.innerHTML = '';
+    list.innerHTML = `<div class="empty"><span class="big">👪</span>Сначала добавьте членов семьи</div>`;
+    return;
+  }
+
+  const visible = state.shopping.filter(i => getShoppingOwner(i) === activeShopTab);
+  const total = visible.length;
+  const bought = visible.filter(i => i.done).length;
   const pct = total ? Math.round(bought / total * 100) : 0;
-  $('shopProgress').innerHTML = total ? `
+
+  progressWrap.innerHTML = total ? `
     <div class="progress-top"><span>Куплено ${bought} из ${total}</span><span>${pct}%</span></div>
     <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>` : '';
 
-  const list = $('shopList');
   if (!total) {
     list.innerHTML = `<div class="empty"><span class="big">🛒</span>Список покупок пуст</div>`;
     return;
   }
-  list.innerHTML = state.shopping.map(i => `
+
+  list.innerHTML = visible.map(i => `
     <div class="item ${i.done ? 'done' : ''}" data-id="${i.id}">
       <button class="check"></button>
       <div class="item-body"><div class="item-title">${esc(i.text)}</div></div>
       <button class="del">✕</button>
     </div>`).join('');
 }
+
 $('addShopBtn').addEventListener('click', addShopItem);
 $('shopInput').addEventListener('keydown', e => { if (e.key === 'Enter') addShopItem(); });
+
 function addShopItem() {
+  if (!state.members.length) {
+    toast('Сначала добавьте членов семьи');
+    return;
+  }
   const text = $('shopInput').value.trim();
   if (!text) { $('shopInput').focus(); return; }
-  const existing = state.shopping.find(i => i.text.toLowerCase() === text.toLowerCase());
-  if (existing) existing.done = false;
-  else state.shopping.push({ id: uid(), text, done: false });
+
+  // если активной вкладки нет — ставим первого
+  if (!state.members.some(m => m.id === activeShopTab)) {
+    activeShopTab = state.members[0].id;
+    localStorage.setItem(LS_SHOP_TAB, activeShopTab);
+  }
+
+  const existing = state.shopping.find(i =>
+    getShoppingOwner(i) === activeShopTab &&
+    i.text.toLowerCase() === text.toLowerCase()
+  );
+  if (existing) {
+    existing.done = false;
+    existing.ownerId = activeShopTab;
+  } else {
+    state.shopping.push({
+      id: uid(),
+      text,
+      done: false,
+      ownerId: activeShopTab
+    });
+  }
   $('shopInput').value = '';
   save();
   renderShopping();
   hapticSuccess();
   $('shopInput').focus();
 }
+
 $('shopList').addEventListener('click', e => {
   const row = e.target.closest('.item');
   if (!row) return;
@@ -2375,14 +2593,18 @@ $('shopList').addEventListener('click', e => {
   }
 });
 $('clearBoughtBtn').addEventListener('click', () => {
-  state.shopping = state.shopping.filter(i => !i.done);
+  state.shopping = state.shopping.filter(i => {
+    if (getShoppingOwner(i) !== activeShopTab) return true;
+    return !i.done;
+  });
   save(); renderShopping();
 });
 $('clearAllShopBtn').addEventListener('click', () => {
-  if (!state.shopping.length) return;
-  if (confirm('Очистить весь список покупок?')) {
+  const has = state.shopping.some(i => getShoppingOwner(i) === activeShopTab);
+  if (!has) return;
+  if (confirm('Очистить список покупок этого участника?')) {
     hapticDelete();
-    state.shopping = [];
+    state.shopping = state.shopping.filter(i => getShoppingOwner(i) !== activeShopTab);
     save(); renderShopping();
   }
 });
@@ -2392,6 +2614,7 @@ $('clearAllShopBtn').addEventListener('click', () => {
    ============================================================ */
 function renderMembers() {
   const list = $('memberList');
+  if (!list) return;
   if (!state.members.length) {
     list.innerHTML = `<div class="empty"><span class="big">👪</span>Пока никого</div>`;
     return;
@@ -2401,7 +2624,6 @@ function renderMembers() {
     const done = state.tasks.filter(t => t.assigneeId === m.id && t.done).length;
     const me = isMe(m.id);
     const avatarInner = m.photo ? `<img src="${esc(m.photo)}" alt="">` : esc(m.emoji || DEFAULT_EMOJI);
-    const meBadge = me ? ' <span style="color:#12a05c;font-size:11px">· вы</span>' : '';
     const tgBadge = m.isTelegramUser ? ' <span style="color:#6c5ce7;font-size:11px">· TG</span>' : '';
     const needNameHint = me && /^Устройство /.test(m.name);
     const actions = me
@@ -2410,7 +2632,7 @@ function renderMembers() {
     return `<div class="member" data-id="${m.id}">
       <div class="avatar" style="background:${m.color}22">${avatarInner}</div>
       <div class="member-body">
-        <div class="member-name">${esc(m.name)}${meBadge}${tgBadge}</div>
+        <div class="member-name">${esc(m.name)}${tgBadge}</div>
         <div class="member-sub">${open} активных · ${done} выполнено</div>
         ${needNameHint ? `<div class="name-hint">✏️ Нажмите, чтобы задать имя и аватар</div>` : ''}
       </div>
@@ -2459,7 +2681,6 @@ function startEditProfile(memberEl) {
     const newEmoji = getEmojiFromPicker($('editProfileEmoji'));
     const newColor = $('editProfileColor').value;
     if (!newName) { cancel(); return; }
-
     if (newName !== oldName || newEmoji !== oldEmoji || newColor !== oldColor) {
       me.name = newName;
       me.emoji = newEmoji;
@@ -2485,7 +2706,6 @@ function startEditProfile(memberEl) {
   });
 }
 
-buildEmojiPicker($('memberEmojiPicker'), DEFAULT_EMOJI);
 $('addMemberBtn').addEventListener('click', addMember);
 $('memberName').addEventListener('keydown', e => { if (e.key === 'Enter') addMember(); });
 
@@ -2500,10 +2720,11 @@ function addMember() {
     color: $('memberColor').value || pickMemberColor(),
     isTelegramUser: false
   });
-  $('memberName').value = '';
   save();
+  closeAddMemberForm();
   renderAll();
   hapticSuccess();
+  toast('Участник добавлен');
 }
 
 $('memberList').addEventListener('click', e => {
@@ -2520,15 +2741,21 @@ $('memberList').addEventListener('click', e => {
   state.members = state.members.filter(x => x.id !== id);
   state.tasks.forEach(t => { if (t.assigneeId === id) t.assigneeId = null; });
   state.events.forEach(ev => {
-    if (Array.isArray(ev.memberIds)) {
-      ev.memberIds = ev.memberIds.filter(x => x !== id);
-    }
+    if (Array.isArray(ev.memberIds)) ev.memberIds = ev.memberIds.filter(x => x !== id);
     if (ev.memberId === id) ev.memberId = null;
   });
+  // Покупки: переназначаем первому оставшемуся
+  const fallback = state.members[0]?.id || null;
+  state.shopping.forEach(i => { if (i.ownerId === id) i.ownerId = fallback; });
   selectedEventMembers = selectedEventMembers.filter(x => x !== id);
   eventDayFilter.delete(id);
   eventDayFilterKnown.delete(id);
   if (taskFilter === id) taskFilter = 'all';
+  if (activeShopTab === id) {
+    activeShopTab = state.members[0]?.id || null;
+    if (activeShopTab) localStorage.setItem(LS_SHOP_TAB, activeShopTab);
+    else localStorage.removeItem(LS_SHOP_TAB);
+  }
   save();
   renderAll();
 });
@@ -2560,6 +2787,8 @@ function renderAll() {
     tg.setBackgroundColor?.('#f2f4fa');
     tg.disableVerticalSwipes?.();
   }
+  applyTheme();
+  initThemeHandlers();
   await initFirebase();
   if (session) {
     $('onboarding').style.display = 'none';
