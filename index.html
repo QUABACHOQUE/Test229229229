@@ -180,7 +180,8 @@
   .add-form .sm{flex:0 1 150px}
   .add-form .xs{flex:0 0 130px}
 
-  .add-event-open{
+  /* Кнопка раскрытия формы (универсальная для задач и событий) */
+  .add-open{
     display:flex;align-items:center;justify-content:center;gap:8px;
     width:100%;padding:12px;margin-top:6px;
     background:#f7f8fd;
@@ -188,25 +189,25 @@
     border:1.5px dashed rgba(108,92,231,.35);
     border-radius:10px;cursor:pointer;transition:.15s;
   }
-  .add-event-open:hover{
+  .add-open:hover{
     background:var(--accent-soft);
     border-color:var(--accent);
   }
-  .add-event-open .plus{
+  .add-open .plus{
     font-size:18px;line-height:1;font-weight:400;
   }
 
-  .add-event-form-wrap{
+  .add-form-wrap{
     margin-top:4px;
     animation:fade .18s ease;
   }
-  .add-event-form-wrap .add-form{
+  .add-form-wrap .add-form{
     background:#fafbff;
     border:1px solid rgba(108,92,231,.18);
     border-radius:12px;
     padding:12px;
   }
-  .add-event-actions{
+  .add-form-actions{
     display:flex;gap:8px;
     width:100%;
     justify-content:flex-end;
@@ -511,7 +512,6 @@
   .chip-btn:hover{border-color:#cfd5e8}
   .chip-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
-  /* ---------- Фильтр дня с галочками ---------- */
   #dayFilters{
     margin-bottom:12px;
   }
@@ -798,7 +798,14 @@
   </nav>
 
   <section class="panel active" id="panel-tasks">
-    <div class="card">
+    <!-- Кнопка раскрытия формы -->
+    <button type="button" class="add-open" id="addTaskOpenBtn">
+      <span class="plus">+</span>
+      <span>Добавить задачу</span>
+    </button>
+
+    <!-- Форма -->
+    <div class="add-form-wrap" id="addTaskFormWrap" style="display:none">
       <div class="add-form">
         <input type="text" id="taskTitle" class="grow" placeholder="Что нужно сделать?">
         <select id="taskAssignee" class="sm"></select>
@@ -808,11 +815,13 @@
           <option value="high">Срочно</option>
           <option value="low">Не срочно</option>
         </select>
-        <button class="btn" id="addTaskBtn">Добавить</button>
+        <div class="add-form-actions">
+          <button type="button" class="btn ghost" id="addTaskCancelBtn">Отмена</button>
+          <button type="button" class="btn" id="addTaskBtn">Добавить</button>
+        </div>
       </div>
     </div>
 
-    <div class="progress-wrap" id="taskProgress"></div>
     <div class="chips-row" id="taskFilters"></div>
     <div class="list" id="taskList"></div>
   </section>
@@ -835,12 +844,12 @@
       <div class="chips-row" id="dayFilters"></div>
       <div class="list" id="eventList" style="margin-bottom:14px"></div>
 
-      <button type="button" class="add-event-open" id="addEventOpenBtn">
+      <button type="button" class="add-open" id="addEventOpenBtn">
         <span class="plus">+</span>
         <span>Добавить событие</span>
       </button>
 
-      <div class="add-event-form-wrap" id="addEventFormWrap" style="display:none">
+      <div class="add-form-wrap" id="addEventFormWrap" style="display:none">
         <div class="add-form">
           <input type="text" id="eventTitle" class="grow" placeholder="Название события…">
 
@@ -878,7 +887,7 @@
             </div>
           </div>
 
-          <div class="add-event-actions">
+          <div class="add-form-actions">
             <button type="button" class="btn ghost" id="addEventCancelBtn">Отмена</button>
             <button type="button" class="btn" id="addEventBtn">Добавить</button>
           </div>
@@ -1034,13 +1043,11 @@ let saveTimer = null;
 let editingEventId = null;
 let activeEventId = null;
 
-/* Регулярное событие */
 let regularMode = false;
 let regularDays = new Set();
 
-/* Фильтр событий дня по участникам */
-let eventDayFilter = new Set();       // кого показывать
-let eventDayFilterKnown = new Set();  // кого уже видели (чтобы новых добавлять автоматически)
+let eventDayFilter = new Set();
+let eventDayFilterKnown = new Set();
 
 try {
   session = JSON.parse(localStorage.getItem(LS_SESSION) || 'null');
@@ -1620,7 +1627,30 @@ $('regularToggleBtn').addEventListener('click', () => {
 });
 
 /* ============================================================
-   ОТКРЫТИЕ/ЗАКРЫТИЕ ФОРМЫ ДОБАВЛЕНИЯ СОБЫТИЯ
+   ФОРМА ЗАДАЧИ — открытие/закрытие
+   ============================================================ */
+function openTaskForm() {
+  $('addTaskOpenBtn').style.display = 'none';
+  $('addTaskFormWrap').style.display = '';
+  setTimeout(() => {
+    const el = $('taskTitle');
+    if (el) el.focus();
+  }, 60);
+}
+
+function closeTaskForm() {
+  $('addTaskFormWrap').style.display = 'none';
+  $('addTaskOpenBtn').style.display = '';
+  $('taskTitle').value = '';
+  $('taskDue').value = '';
+  $('taskPriority').value = 'normal';
+}
+
+$('addTaskOpenBtn').addEventListener('click', openTaskForm);
+$('addTaskCancelBtn').addEventListener('click', closeTaskForm);
+
+/* ============================================================
+   ФОРМА СОБЫТИЯ — открытие/закрытие
    ============================================================ */
 function openAddEventForm() {
   $('addEventOpenBtn').style.display = 'none';
@@ -1809,12 +1839,6 @@ function renderTasks() {
     if (b.due) return 1;
     return 0;
   });
-  const total = state.tasks.length;
-  const done = state.tasks.filter(t => t.done).length;
-  const pct = total ? Math.round(done / total * 100) : 0;
-  $('taskProgress').innerHTML = total ? `
-    <div class="progress-top"><span>Выполнено ${done} из ${total}</span><span>${pct}%</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>` : '';
 
   const list = $('taskList');
   if (!items.length) {
@@ -1854,12 +1878,10 @@ function addTask() {
     done: false,
     createdAt: Date.now()
   });
-  $('taskTitle').value = '';
-  $('taskDue').value = '';
-  $('taskPriority').value = 'normal';
   save();
+  closeTaskForm();
   renderTasks();
-  $('taskTitle').focus();
+  toast('Задача добавлена');
 }
 $('taskList').addEventListener('click', e => {
   const row = e.target.closest('.item');
@@ -2053,15 +2075,13 @@ function renderDayEvents() {
     day: 'numeric', month: 'long', weekday: 'long'
   });
 
-  /* Отрисовываем фильтр чипов */
   renderDayFilters();
 
-  /* Берём события дня, применяем фильтр участников */
   const evs = state.events
     .filter(e => e.date === selectedDate)
     .filter(e => {
       const ids = getEventMemberIds(e);
-      if (ids.length === 0) return true; // события без ответственных показываем всегда
+      if (ids.length === 0) return true;
       return ids.some(id => eventDayFilter.has(id));
     })
     .sort((a, b) => eventSortKey(a).localeCompare(eventSortKey(b)));
