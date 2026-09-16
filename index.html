@@ -265,12 +265,6 @@
     padding:13px 14px;box-shadow:var(--shadow);transition:.15s;
   }
   .item:hover{box-shadow:0 4px 16px rgba(30,40,80,.09)}
-  .event-item{cursor:pointer}
-  .event-item:hover{
-    box-shadow:0 4px 16px rgba(30,40,80,.12);
-    transform:translateY(-1px);
-  }
-  .event-item:active{transform:translateY(0)}
   .check{
     flex:0 0 auto;width:22px;height:22px;margin-top:1px;border-radius:50%;
     border:2px solid #ccd2e4;background:#fff;cursor:pointer;transition:.15s;
@@ -300,9 +294,14 @@
     font-size:16px;line-height:1;padding:4px 6px;border-radius:8px;transition:.15s;
   }
   .del:hover{background:#ffecec;color:var(--danger)}
+  .edit-event-btn{
+    flex:0 0 auto;border:0;background:transparent;color:#c6ccdb;cursor:pointer;
+    font-size:14px;line-height:1;padding:5px 6px;border-radius:8px;transition:.15s;
+  }
+  .edit-event-btn:hover{background:var(--accent-soft);color:var(--accent)}
 
   /* ============================================================
-     ФОРМА РЕДАКТИРОВАНИЯ СОБЫТИЯ (внутри карточки)
+     ФОРМА РЕДАКТИРОВАНИЯ СОБЫТИЯ
      ============================================================ */
   .event-edit-card{
     background:#fff;border-radius:14px;
@@ -326,12 +325,8 @@
     border-color:var(--accent);background:#fff;
     box-shadow:0 0 0 3px var(--accent-soft);
   }
-  .ee-time-row{
-    display:flex;flex-wrap:wrap;gap:8px;
-  }
-  .ee-members{
-    display:flex;flex-wrap:wrap;gap:6px;
-  }
+  .ee-time-row{display:flex;flex-wrap:wrap;gap:8px}
+  .ee-members{display:flex;flex-wrap:wrap;gap:6px}
   .ee-member{
     display:inline-flex;align-items:center;
     padding:6px 12px;border:1px solid var(--line);
@@ -846,7 +841,6 @@ let unsubscribe = null;
 let applyingRemote = false;
 let saveTimer = null;
 
-/* ID события, которое сейчас редактируется */
 let editingEventId = null;
 
 try {
@@ -1172,9 +1166,6 @@ function fmtDuration(start, end) {
 }
 function eventSortKey(e) { return e.time || '99:99'; }
 
-/* ============================================================
-   УЧАСТНИКИ СОБЫТИЯ
-   ============================================================ */
 function getEventMemberIds(e) {
   if (Array.isArray(e.memberIds)) return e.memberIds;
   if (e.memberId === 'all') return state.members.map(m => m.id);
@@ -1196,7 +1187,7 @@ function primaryEventColor(e) {
 }
 
 /* ============================================================
-   МУЛЬТИСЕЛЕКТ В ФОРМЕ ДОБАВЛЕНИЯ
+   МУЛЬТИСЕЛЕКТ
    ============================================================ */
 let selectedEventMembers = [];
 
@@ -1600,7 +1591,7 @@ $('calGrid').addEventListener('click', e => {
 });
 
 /* ============================================================
-   РЕНДЕР СОБЫТИЙ ВЫБРАННОГО ДНЯ + ФОРМА РЕДАКТИРОВАНИЯ
+   ОТОБРАЖЕНИЕ СОБЫТИЙ ДНЯ
    ============================================================ */
 function renderEventView(e) {
   const bg = primaryEventColor(e);
@@ -1629,13 +1620,14 @@ function renderEventView(e) {
     });
   }
 
-  return `<div class="item event-item" data-id="${e.id}" title="Нажмите, чтобы изменить">
+  return `<div class="item" data-id="${e.id}">
     <div style="width:6px;align-self:stretch;border-radius:6px;background:${bg};flex:0 0 auto"></div>
     <div class="item-body">
       <div class="item-title">${esc(e.title)}</div>
       <div class="meta">${chips.join('')}</div>
     </div>
-    <button class="del" title="Удалить">✕</button>
+    <button class="edit-event-btn" title="Изменить" data-action="edit">✏️</button>
+    <button class="del" title="Удалить" data-action="del">✕</button>
   </div>`;
 }
 
@@ -1689,7 +1681,6 @@ function renderDayEvents() {
     .filter(e => e.date === selectedDate)
     .sort((a, b) => eventSortKey(a).localeCompare(eventSortKey(b)));
 
-  /* Если редактируемое событие больше не существует — сбрасываем */
   if (editingEventId && !evs.some(e => e.id === editingEventId)) {
     editingEventId = null;
   }
@@ -1709,7 +1700,7 @@ function renderDayEvents() {
 }
 
 /* ============================================================
-   ОБРАБОТЧИКИ ФОРМЫ РЕДАКТИРОВАНИЯ
+   ФОРМА РЕДАКТИРОВАНИЯ — ОБРАБОТЧИКИ
    ============================================================ */
 function attachEventEditHandlers() {
   const card = $('eventList').querySelector('.event-edit-card');
@@ -1728,7 +1719,6 @@ function attachEventEditHandlers() {
     });
   });
 
-  /* Визуальная подсветка выбранных чипов */
   card.querySelectorAll('.ee-member').forEach(label => {
     const cb = label.querySelector('input[type=checkbox]');
     if (!cb) return;
@@ -1757,7 +1747,6 @@ function attachEventEditHandlers() {
     ev.time = s;
     ev.endTime = en;
     ev.memberIds = newIds;
-    /* Чистим устаревший формат, чтобы не было конфликта */
     if (ev.memberId !== undefined) delete ev.memberId;
 
     editingEventId = null;
@@ -1778,17 +1767,12 @@ function attachEventEditHandlers() {
     if (action.dataset.eeAction === 'cancel') doCancel();
   });
 
-  titleInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); doSave(); }
-    if (e.key === 'Escape') { e.preventDefault(); doCancel(); }
-  });
-  timeInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); doSave(); }
-    if (e.key === 'Escape') { e.preventDefault(); doCancel(); }
-  });
-  endInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); doSave(); }
-    if (e.key === 'Escape') { e.preventDefault(); doCancel(); }
+  [titleInput, timeInput, endInput].forEach(inp => {
+    if (!inp) return;
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); doSave(); }
+      if (e.key === 'Escape') { e.preventDefault(); doCancel(); }
+    });
   });
 
   titleInput.focus();
@@ -1798,14 +1782,13 @@ function attachEventEditHandlers() {
    КЛИКИ ПО СПИСКУ СОБЫТИЙ
    ============================================================ */
 $('eventList').addEventListener('click', e => {
-  /* Если клик внутри формы редактирования — не трогаем, у формы свой обработчик */
   if (e.target.closest('.event-edit-card')) return;
 
   const row = e.target.closest('.item');
   if (!row) return;
 
-  /* Клик по ✕ — удалить */
-  if (e.target.closest('.del')) {
+  /* Крестик — удалить */
+  if (e.target.closest('[data-action="del"]')) {
     state.events = state.events.filter(x => x.id !== row.dataset.id);
     if (editingEventId === row.dataset.id) editingEventId = null;
     save();
@@ -1813,9 +1796,14 @@ $('eventList').addEventListener('click', e => {
     return;
   }
 
-  /* Клик по остальной карточке — режим редактирования */
-  editingEventId = row.dataset.id;
-  renderDayEvents();
+  /* Карандаш — открыть форму редактирования */
+  if (e.target.closest('[data-action="edit"]')) {
+    editingEventId = row.dataset.id;
+    renderDayEvents();
+    return;
+  }
+
+  /* Клик по карточке — ничего не делает */
 });
 
 $('addEventBtn').addEventListener('click', addEvent);
