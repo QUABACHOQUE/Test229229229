@@ -213,9 +213,6 @@
     margin-top:4px;
   }
 
-  /* ============================================================
-     РЕГУЛЯРНОЕ СОБЫТИЕ
-     ============================================================ */
   .regular-toggle{
     display:inline-flex;align-items:center;gap:8px;
     padding:9px 14px;
@@ -514,6 +511,40 @@
   .chip-btn:hover{border-color:#cfd5e8}
   .chip-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
+  /* ---------- Фильтр дня с галочками ---------- */
+  #dayFilters{
+    margin-bottom:12px;
+  }
+  .day-filter-btn{
+    font:inherit;font-size:12.5px;font-weight:600;
+    border:1px solid var(--line);
+    background:#fff;color:var(--muted);
+    padding:6px 12px;border-radius:20px;
+    cursor:pointer;transition:.15s;
+    display:inline-flex;align-items:center;gap:6px;
+    white-space:nowrap;
+  }
+  .day-filter-btn:hover{border-color:#cfd5e8}
+  .day-filter-btn.active{
+    background:var(--accent-soft);
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+  .day-filter-check{
+    width:14px;height:14px;border-radius:4px;
+    border:1.5px solid currentColor;
+    background:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:9px;line-height:1;color:#fff;
+    flex:0 0 auto;transition:.12s;
+    opacity:.7;
+  }
+  .day-filter-btn.active .day-filter-check{
+    opacity:1;
+    background:var(--accent);border-color:var(--accent);
+  }
+  .day-filter-btn.active .day-filter-check::after{content:"✓"}
+
   .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
   .cal-title{font-size:17px;font-weight:700;text-transform:capitalize}
   .cal-nav{display:flex;gap:6px}
@@ -801,6 +832,7 @@
 
     <div class="card">
       <p class="section-title" id="dayTitle"></p>
+      <div class="chips-row" id="dayFilters"></div>
       <div class="list" id="eventList" style="margin-bottom:14px"></div>
 
       <button type="button" class="add-event-open" id="addEventOpenBtn">
@@ -829,13 +861,11 @@
             <div class="multiselect-menu" id="eventMemberMenu"></div>
           </div>
 
-          <!-- Кнопка "Регулярное событие" -->
           <button type="button" class="regular-toggle" id="regularToggleBtn">
             <span class="ico">🔁</span>
             <span>Регулярное событие</span>
           </button>
 
-          <!-- Мини-календарь для выбора дней -->
           <div class="regular-picker" id="regularPicker" style="display:none">
             <div class="rp-header">
               <span id="rpMonthTitle"></span>
@@ -1007,6 +1037,10 @@ let activeEventId = null;
 /* Регулярное событие */
 let regularMode = false;
 let regularDays = new Set();
+
+/* Фильтр событий дня по участникам */
+let eventDayFilter = new Set();       // кого показывать
+let eventDayFilterKnown = new Set();  // кого уже видели (чтобы новых добавлять автоматически)
 
 try {
   session = JSON.parse(localStorage.getItem(LS_SESSION) || 'null');
@@ -1352,6 +1386,58 @@ function primaryEventColor(e) {
 }
 
 /* ============================================================
+   ФИЛЬТР СОБЫТИЙ ДНЯ
+   ============================================================ */
+function syncEventDayFilter() {
+  const memberIds = new Set(state.members.map(m => m.id));
+
+  for (const id of Array.from(eventDayFilter)) {
+    if (!memberIds.has(id)) eventDayFilter.delete(id);
+  }
+  for (const id of Array.from(eventDayFilterKnown)) {
+    if (!memberIds.has(id)) eventDayFilterKnown.delete(id);
+  }
+  for (const m of state.members) {
+    if (!eventDayFilterKnown.has(m.id)) {
+      eventDayFilter.add(m.id);
+      eventDayFilterKnown.add(m.id);
+    }
+  }
+}
+
+function renderDayFilters() {
+  const wrap = $('dayFilters');
+  if (!wrap) return;
+
+  if (!state.members.length) {
+    wrap.innerHTML = '';
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = '';
+
+  wrap.innerHTML = state.members.map(m => {
+    const active = eventDayFilter.has(m.id);
+    return `<button type="button" class="day-filter-btn ${active ? 'active' : ''}" data-fid="${m.id}">
+      <span class="day-filter-check"></span>
+      <span>${esc(m.emoji || DEFAULT_EMOJI)} ${esc(m.name)}${isMe(m.id) ? ' · я' : ''}</span>
+    </button>`;
+  }).join('');
+}
+
+$('dayFilters').addEventListener('click', e => {
+  const btn = e.target.closest('[data-fid]');
+  if (!btn) return;
+  const id = btn.dataset.fid;
+  if (eventDayFilter.has(id)) {
+    eventDayFilter.delete(id);
+  } else {
+    eventDayFilter.add(id);
+  }
+  renderDayEvents();
+});
+
+/* ============================================================
    МУЛЬТИСЕЛЕКТ
    ============================================================ */
 let selectedEventMembers = [];
@@ -1456,7 +1542,7 @@ $('eventMemberMenu').addEventListener('change', e => {
 });
 
 /* ============================================================
-   РЕГУЛЯРНОЕ СОБЫТИЕ — ОТРИСОВКА МИНИ-КАЛЕНДАРЯ
+   РЕГУЛЯРНОЕ СОБЫТИЕ
    ============================================================ */
 function renderRegularPicker() {
   const grid = $('rpGrid');
@@ -1522,7 +1608,6 @@ $('regularToggleBtn').addEventListener('click', () => {
   regularMode = !regularMode;
   $('regularToggleBtn').classList.toggle('active', regularMode);
   if (regularMode) {
-    /* Предзаполняем текущий выбранный день, если ещё ничего не выбрано */
     if (regularDays.size === 0 && selectedDate) {
       regularDays.add(selectedDate);
     }
@@ -1540,7 +1625,6 @@ $('regularToggleBtn').addEventListener('click', () => {
 function openAddEventForm() {
   $('addEventOpenBtn').style.display = 'none';
   $('addEventFormWrap').style.display = '';
-  /* Сброс состояния регулярного */
   regularMode = false;
   regularDays = new Set();
   $('regularToggleBtn').classList.remove('active');
@@ -1559,7 +1643,6 @@ function closeAddEventForm() {
   $('eventTime').value = '';
   $('eventTimeEnd').value = '';
   $('eventMemberSelect').classList.remove('open');
-  /* Сброс регулярного */
   regularMode = false;
   regularDays = new Set();
   $('regularToggleBtn').classList.remove('active');
@@ -1866,7 +1949,6 @@ function renderCalendar() {
   $('calGrid').innerHTML = html;
   renderDayEvents();
 
-  /* Если открыт пикер регулярного события — обновляем заголовок месяца внутри него */
   if (regularMode) renderRegularPicker();
 }
 
@@ -1971,8 +2053,17 @@ function renderDayEvents() {
     day: 'numeric', month: 'long', weekday: 'long'
   });
 
+  /* Отрисовываем фильтр чипов */
+  renderDayFilters();
+
+  /* Берём события дня, применяем фильтр участников */
   const evs = state.events
     .filter(e => e.date === selectedDate)
+    .filter(e => {
+      const ids = getEventMemberIds(e);
+      if (ids.length === 0) return true; // события без ответственных показываем всегда
+      return ids.some(id => eventDayFilter.has(id));
+    })
     .sort((a, b) => eventSortKey(a).localeCompare(eventSortKey(b)));
 
   if (editingEventId && !evs.some(e => e.id === editingEventId)) {
@@ -2138,7 +2229,6 @@ function addEvent() {
   const end = $('eventTimeEnd').value || '';
   const memberIds = selectedEventMembers.slice();
 
-  /* Регулярный режим */
   if (regularMode) {
     if (regularDays.size === 0) {
       toast('Выберите хотя бы один день');
@@ -2365,6 +2455,8 @@ $('memberList').addEventListener('click', e => {
     if (ev.memberId === id) ev.memberId = null;
   });
   selectedEventMembers = selectedEventMembers.filter(x => x !== id);
+  eventDayFilter.delete(id);
+  eventDayFilterKnown.delete(id);
   if (taskFilter === id) taskFilter = 'all';
   save();
   renderAll();
@@ -2374,6 +2466,7 @@ $('memberList').addEventListener('click', e => {
    ОБЩИЙ РЕНДЕР
    ============================================================ */
 function renderAll() {
+  syncEventDayFilter();
   renderMemberSelects();
   renderTasks();
   renderCalendar();
