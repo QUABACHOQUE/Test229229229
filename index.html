@@ -947,26 +947,35 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 const $ = id => document.getElementById(id);
 
 /* ============================================================
-   HAPTIC FEEDBACK (Telegram Mini Apps)
-   Минимальный набор: только ключевые действия.
+   HAPTIC FEEDBACK
+   Используем нативный Telegram HapticFeedback + fallback
+   на navigator.vibrate для Android, где нативный API молчит.
    ============================================================ */
 function tgHaptic() {
   return window.Telegram?.WebApp?.HapticFeedback || null;
+}
+function nativeVibrate(pattern) {
+  try {
+    if (navigator.vibrate) navigator.vibrate(pattern);
+  } catch (_) {}
 }
 /* Лёгкий тап — для чекбоксов выполнено/куплено */
 function hapticTap() {
   const h = tgHaptic();
   if (h) { try { h.impactOccurred('light'); } catch(_) {} }
+  nativeVibrate(10);
 }
 /* Подтверждение — после успешного добавления */
 function hapticSuccess() {
   const h = tgHaptic();
   if (h) { try { h.notificationOccurred('success'); } catch(_) {} }
+  nativeVibrate([15, 30, 15]);
 }
 /* Удаление — чуть ощутимее обычного тапа */
 function hapticDelete() {
   const h = tgHaptic();
   if (h) { try { h.impactOccurred('medium'); } catch(_) {} }
+  nativeVibrate(25);
 }
 
 function iso(d) {
