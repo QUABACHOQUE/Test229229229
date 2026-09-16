@@ -180,6 +180,41 @@
   .add-form .sm{flex:0 1 150px}
   .add-form .xs{flex:0 0 130px}
 
+  /* Кнопка "Добавить событие" */
+  .add-event-open{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;padding:12px;margin-top:6px;
+    background:var(--surface-2, #f7f8fd);
+    background:#f7f8fd;
+    color:var(--accent);font:inherit;font-weight:600;font-size:14px;
+    border:1.5px dashed rgba(108,92,231,.35);
+    border-radius:10px;cursor:pointer;transition:.15s;
+  }
+  .add-event-open:hover{
+    background:var(--accent-soft);
+    border-color:var(--accent);
+  }
+  .add-event-open .plus{
+    font-size:18px;line-height:1;font-weight:400;
+  }
+
+  .add-event-form-wrap{
+    margin-top:4px;
+    animation:fade .18s ease;
+  }
+  .add-event-form-wrap .add-form{
+    background:#fafbff;
+    border:1px solid rgba(108,92,231,.18);
+    border-radius:12px;
+    padding:12px;
+  }
+  .add-event-actions{
+    display:flex;gap:8px;
+    width:100%;
+    justify-content:flex-end;
+    margin-top:4px;
+  }
+
   .time-range{
     display:flex;align-items:center;gap:4px;
     background:#f7f8fd;border:1px solid var(--line);border-radius:10px;
@@ -683,27 +718,40 @@
     <div class="card">
       <p class="section-title" id="dayTitle"></p>
       <div class="list" id="eventList" style="margin-bottom:14px"></div>
-      <div class="add-form">
-        <input type="text" id="eventTitle" class="grow" placeholder="Новое событие…">
 
-        <div class="time-range" title="Можно ввести только час — минуты подставятся">
-          <span class="time-label">с</span>
-          <input type="text" id="eventTime" class="time-input"
-                 inputmode="numeric" placeholder="13:00" maxlength="5">
-          <span class="dash">—</span>
-          <span class="time-label">до</span>
-          <input type="text" id="eventTimeEnd" class="time-input"
-                 inputmode="numeric" placeholder="14:00" maxlength="5">
+      <!-- Кнопка "Добавить событие" — видна в покое -->
+      <button type="button" class="add-event-open" id="addEventOpenBtn">
+        <span class="plus">+</span>
+        <span>Добавить событие</span>
+      </button>
+
+      <!-- Форма — скрыта по умолчанию, открывается по кнопке -->
+      <div class="add-event-form-wrap" id="addEventFormWrap" style="display:none">
+        <div class="add-form">
+          <input type="text" id="eventTitle" class="grow" placeholder="Название события…">
+
+          <div class="time-range" title="Можно ввести только час — минуты подставятся">
+            <span class="time-label">с</span>
+            <input type="text" id="eventTime" class="time-input"
+                   inputmode="numeric" placeholder="13:00" maxlength="5">
+            <span class="dash">—</span>
+            <span class="time-label">до</span>
+            <input type="text" id="eventTimeEnd" class="time-input"
+                   inputmode="numeric" placeholder="14:00" maxlength="5">
+          </div>
+
+          <div class="multiselect" id="eventMemberSelect">
+            <button type="button" class="multiselect-trigger" id="eventMemberTrigger">
+              <span id="eventMemberLabel">Выберите…</span>
+            </button>
+            <div class="multiselect-menu" id="eventMemberMenu"></div>
+          </div>
+
+          <div class="add-event-actions">
+            <button type="button" class="btn ghost" id="addEventCancelBtn">Отмена</button>
+            <button type="button" class="btn" id="addEventBtn">Добавить</button>
+          </div>
         </div>
-
-        <div class="multiselect" id="eventMemberSelect">
-          <button type="button" class="multiselect-trigger" id="eventMemberTrigger">
-            <span id="eventMemberLabel">Выберите…</span>
-          </button>
-          <div class="multiselect-menu" id="eventMemberMenu"></div>
-        </div>
-
-        <button class="btn" id="addEventBtn">Добавить</button>
       </div>
     </div>
   </section>
@@ -1303,6 +1351,31 @@ $('eventMemberMenu').addEventListener('change', e => {
 });
 
 /* ============================================================
+   ОТКРЫТИЕ/ЗАКРЫТИЕ ФОРМЫ ДОБАВЛЕНИЯ СОБЫТИЯ
+   ============================================================ */
+function openAddEventForm() {
+  $('addEventOpenBtn').style.display = 'none';
+  $('addEventFormWrap').style.display = '';
+  initEventMemberSelect();
+  setTimeout(() => {
+    const el = $('eventTitle');
+    if (el) el.focus();
+  }, 60);
+}
+
+function closeAddEventForm() {
+  $('addEventFormWrap').style.display = 'none';
+  $('addEventOpenBtn').style.display = '';
+  $('eventTitle').value = '';
+  $('eventTime').value = '';
+  $('eventTimeEnd').value = '';
+  $('eventMemberSelect').classList.remove('open');
+}
+
+$('addEventOpenBtn').addEventListener('click', openAddEventForm);
+$('addEventCancelBtn').addEventListener('click', closeAddEventForm);
+
+/* ============================================================
    МИНИ-ГАНТ
    ============================================================ */
 function timeToPct(hhmm) {
@@ -1539,12 +1612,14 @@ $('prevMonth').addEventListener('click', () => {
   calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
   editingEventId = null;
   activeEventId = null;
+  closeAddEventForm();
   renderCalendar();
 });
 $('nextMonth').addEventListener('click', () => {
   calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; }
   editingEventId = null;
   activeEventId = null;
+  closeAddEventForm();
   renderCalendar();
 });
 $('todayBtn').addEventListener('click', () => {
@@ -1553,6 +1628,7 @@ $('todayBtn').addEventListener('click', () => {
   selectedDate = TODAY;
   editingEventId = null;
   activeEventId = null;
+  closeAddEventForm();
   renderCalendar();
 });
 
@@ -1603,6 +1679,7 @@ $('calGrid').addEventListener('click', e => {
   selectedDate = cell.dataset.date;
   editingEventId = null;
   activeEventId = null;
+  closeAddEventForm();
   renderCalendar();
 });
 
@@ -1805,8 +1882,6 @@ function attachEventEditHandlers() {
 
 /* ============================================================
    КЛИКИ ПО СПИСКУ СОБЫТИЙ
-   ВАЖНО: stopPropagation, чтобы клик не долетал до document
-   и не сбрасывал activeEventId сразу после установки.
    ============================================================ */
 $('eventList').addEventListener('click', e => {
   if (e.target.closest('.event-edit-card')) return;
@@ -1832,6 +1907,7 @@ $('eventList').addEventListener('click', e => {
     e.stopPropagation();
     editingEventId = id;
     activeEventId = null;
+    closeAddEventForm();
     renderDayEvents();
     return;
   }
@@ -1875,16 +1951,12 @@ function addEvent() {
     memberIds
   });
 
-  $('eventTitle').value = '';
-  $('eventTime').value = '';
-  $('eventTimeEnd').value = '';
-
   editingEventId = null;
   activeEventId = null;
   save();
+  closeAddEventForm();
   renderCalendar();
-  initEventMemberSelect();
-  $('eventTitle').focus();
+  toast('Событие добавлено');
 }
 
 /* ============================================================
