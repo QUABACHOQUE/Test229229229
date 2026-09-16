@@ -263,8 +263,14 @@
   .item{
     display:flex;align-items:flex-start;gap:12px;background:#fff;border-radius:14px;
     padding:13px 14px;box-shadow:var(--shadow);transition:.15s;
+    border:1px solid transparent;
   }
   .item:hover{box-shadow:0 4px 16px rgba(30,40,80,.09)}
+  .item.active{
+    border-color:rgba(108,92,231,.35);
+    background:#fafbff;
+    box-shadow:0 4px 16px rgba(108,92,231,.14);
+  }
   .check{
     flex:0 0 auto;width:22px;height:22px;margin-top:1px;border-radius:50%;
     border:2px solid #ccd2e4;background:#fff;cursor:pointer;transition:.15s;
@@ -299,6 +305,16 @@
     font-size:14px;line-height:1;padding:5px 6px;border-radius:8px;transition:.15s;
   }
   .edit-event-btn:hover{background:var(--accent-soft);color:var(--accent)}
+
+  /* Кнопки действий появляются только когда карточка активна */
+  .event-actions{
+    display:none;
+    gap:2px;flex:0 0 auto;align-items:flex-start;
+  }
+  .item.active .event-actions{
+    display:flex;
+    animation:fade .15s ease;
+  }
 
   /* ============================================================
      ФОРМА РЕДАКТИРОВАНИЯ СОБЫТИЯ
@@ -842,6 +858,7 @@ let applyingRemote = false;
 let saveTimer = null;
 
 let editingEventId = null;
+let activeEventId = null;
 
 try {
   session = JSON.parse(localStorage.getItem(LS_SESSION) || 'null');
@@ -1526,11 +1543,13 @@ let calYear, calMonth, selectedDate;
 $('prevMonth').addEventListener('click', () => {
   calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
   editingEventId = null;
+  activeEventId = null;
   renderCalendar();
 });
 $('nextMonth').addEventListener('click', () => {
   calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; }
   editingEventId = null;
+  activeEventId = null;
   renderCalendar();
 });
 $('todayBtn').addEventListener('click', () => {
@@ -1538,6 +1557,7 @@ $('todayBtn').addEventListener('click', () => {
   calYear = n.getFullYear(); calMonth = n.getMonth();
   selectedDate = TODAY;
   editingEventId = null;
+  activeEventId = null;
   renderCalendar();
 });
 
@@ -1587,6 +1607,7 @@ $('calGrid').addEventListener('click', e => {
   if (!cell || cell.classList.contains('blank')) return;
   selectedDate = cell.dataset.date;
   editingEventId = null;
+  activeEventId = null;
   renderCalendar();
 });
 
@@ -1620,14 +1641,18 @@ function renderEventView(e) {
     });
   }
 
-  return `<div class="item" data-id="${e.id}">
+  const activeClass = activeEventId === e.id ? ' active' : '';
+
+  return `<div class="item${activeClass}" data-id="${e.id}">
     <div style="width:6px;align-self:stretch;border-radius:6px;background:${bg};flex:0 0 auto"></div>
     <div class="item-body">
       <div class="item-title">${esc(e.title)}</div>
       <div class="meta">${chips.join('')}</div>
     </div>
-    <button class="edit-event-btn" title="Изменить" data-action="edit">✏️</button>
-    <button class="del" title="Удалить" data-action="del">✕</button>
+    <div class="event-actions">
+      <button class="edit-event-btn" title="Изменить" data-action="edit">✏️</button>
+      <button class="del" title="Удалить" data-action="del">✕</button>
+    </div>
   </div>`;
 }
 
@@ -1683,6 +1708,9 @@ function renderDayEvents() {
 
   if (editingEventId && !evs.some(e => e.id === editingEventId)) {
     editingEventId = null;
+  }
+  if (activeEventId && !evs.some(e => e.id === activeEventId)) {
+    activeEventId = null;
   }
 
   const list = $('eventList');
@@ -1750,6 +1778,7 @@ function attachEventEditHandlers() {
     if (ev.memberId !== undefined) delete ev.memberId;
 
     editingEventId = null;
+    activeEventId = null;
     save();
     renderCalendar();
     toast('Событие обновлено');
@@ -1757,6 +1786,7 @@ function attachEventEditHandlers() {
 
   const doCancel = () => {
     editingEventId = null;
+    activeEventId = null;
     renderDayEvents();
   };
 
@@ -1787,10 +1817,13 @@ $('eventList').addEventListener('click', e => {
   const row = e.target.closest('.item');
   if (!row) return;
 
+  const id = row.dataset.id;
+
   /* Крестик — удалить */
   if (e.target.closest('[data-action="del"]')) {
-    state.events = state.events.filter(x => x.id !== row.dataset.id);
-    if (editingEventId === row.dataset.id) editingEventId = null;
+    state.events = state.events.filter(x => x.id !== id);
+    if (editingEventId === id) editingEventId = null;
+    if (activeEventId === id) activeEventId = null;
     save();
     renderCalendar();
     return;
@@ -1798,12 +1831,27 @@ $('eventList').addEventListener('click', e => {
 
   /* Карандаш — открыть форму редактирования */
   if (e.target.closest('[data-action="edit"]')) {
-    editingEventId = row.dataset.id;
+    editingEventId = id;
+    activeEventId = null;
     renderDayEvents();
     return;
   }
 
-  /* Клик по карточке — ничего не делает */
+  /* Клик по телу карточки — переключить активность (показать/скрыть действия) */
+  if (activeEventId === id) {
+    activeEventId = null;
+  } else {
+    activeEventId = id;
+  }
+  renderDayEvents();
+});
+
+/* Клик вне списка событий — снимаем активность */
+document.addEventListener('click', e => {
+  if (activeEventId === null) return;
+  if (e.target.closest('#eventList')) return;
+  activeEventId = null;
+  renderDayEvents();
 });
 
 $('addEventBtn').addEventListener('click', addEvent);
@@ -1832,6 +1880,7 @@ function addEvent() {
   $('eventTimeEnd').value = '';
 
   editingEventId = null;
+  activeEventId = null;
   save();
   renderCalendar();
   initEventMemberSelect();
